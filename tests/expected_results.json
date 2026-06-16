@@ -1,0 +1,104 @@
+{
+  "sc/sc_compare_slt.dat": {
+    "covers": ["slt"],
+    "regs": {
+      "x10": "0x00000001",
+      "x11": "0x00000000",
+      "x12": "0x00000000",
+      "x13": "0x00000001"
+    }
+  },
+  "sc/sc_compare_sltu.dat": {
+    "covers": ["sltu"],
+    "regs": {
+      "x10": "0x00000001",
+      "x11": "0x00000000",
+      "x12": "0x00000000",
+      "x13": "0x00000000"
+    }
+  },
+  "sc/sc_logic_immediate.dat": {
+    "covers": ["andi", "ori", "xori"],
+    "regs": {
+      "x10": "0x000000f0",
+      "x11": "0x000000ff",
+      "x12": "0x0000000f",
+      "x13": "0x000000ff",
+      "x14": "0x00000123",
+      "x15": "0xffffffff"
+    }
+  },
+  "sc/sc_shift_immediate.dat": {
+    "covers": ["slli", "srli", "srai"],
+    "regs": {
+      "x10": "0x00000010",
+      "x11": "0x0000003e",
+      "x12": "0x7ffffffc",
+      "x13": "0xfffffffc",
+      "x14": "0xfffffff8"
+    }
+  },
+  "sc/sc_set_less_immediate.dat": {
+    "covers": ["slti", "sltiu"],
+    "regs": {
+      "x10": "0x00000000",
+      "x11": "0x00000001",
+      "x12": "0x00000000",
+      "x13": "0x00000001",
+      "x14": "0x00000001",
+      "x15": "0x00000001",
+      "x16": "0x00000000"
+    }
+  },
+  "sc/sc_branches.dat": {
+    "covers": ["bne", "bge", "bgeu", "blt", "bltu"],
+    "regs": {
+      "x10": "0x00000002",
+      "x11": "0x00000001",
+      "x12": "0x00000002",
+      "x13": "0x00000001",
+      "x14": "0x00000002",
+      "x15": "0x00000001",
+      "x16": "0x00000002",
+      "x17": "0x00000001",
+      "x18": "0x00000002",
+      "x19": "0x00000001"
+    }
+  },
+  "sc/sc_jalr.dat": {
+    "covers": ["jalr"],
+    "regs": {
+      "x2": "0x00000000",
+      "x3": "0x0000000b",
+      "x4": "0x00000000",
+      "x7": "0x0000000d",
+      "x10": "0x0000000c",
+      "x11": "0x0000001c"
+    }
+  },
+  "pl/pl_compare_slt.dat": {"same_as": "sc/sc_compare_slt.dat"},
+  "pl/pl_compare_sltu.dat": {"same_as": "sc/sc_compare_sltu.dat"},
+  "pl/pl_logic_immediate.dat": {"same_as": "sc/sc_logic_immediate.dat"},
+  "pl/pl_shift_immediate.dat": {"same_as": "sc/sc_shift_immediate.dat"},
+  "pl/pl_set_less_immediate.dat": {"same_as": "sc/sc_set_less_immediate.dat"},
+  "pl/pl_branches.dat": {"same_as": "sc/sc_branches.dat"},
+  "pl/pl_beq.dat": {
+    "covers": ["beq"],
+    "regs": {
+      "x10": "0x00000002",
+      "x11": "0x00000004"
+    }
+  },
+  "pl/pl_jal.dat": {
+    "covers": ["jal"],
+    "regs": {
+      "x1": "0x00000004",
+      "x2": "0x00000000",
+      "x3": "0x00000007",
+      "x4": "0x00000010",
+      "x5": "0x00000000",
+      "x6": "0x00000008"
+    }
+  },
+  "pl/pl_jalr.dat": {"same_as": "sc/sc_jalr.dat"}
+}

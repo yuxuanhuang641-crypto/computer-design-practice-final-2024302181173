@@ -1,0 +1,88 @@
+WARNING: E:\computerlab\final_acceptance\tb\pl_teacher_tb.v:22: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: E:\computerlab\final_acceptance\tb\pl_teacher_tb.v:22: $readmemh(E:\computerlab\ComputerDesignLabs-main\CODExp\testcode\task\riscv_sidascsorting_sim.dat): Not enough words in the file for the requested range [0:255].
+ memaddr = 00000180, memdata = 54873530 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+ memaddr = 00000184, memdata = 03345578 
+[SNAPSHOT] registers
+[REG] x0=00000000
+[REG] x1=ffff0004
+[REG] x2=ffff000c
+[REG] x3=00000008
+[REG] x4=00000000
+[REG] x5=00000100
+[REG] x6=00ffffff
+[REG] x7=00000000
+[REG] x8=03000000
+[REG] x9=0000001c
+[REG] x10=0000001c
+[REG] x11=00000008
+[REG] x12=00000007
+[REG] x13=00000000
+[REG] x14=00000000
+[REG] x15=03345578
+[REG] x16=00000000
+[REG] x17=00000000
+[REG] x18=00000000
+[REG] x19=00000000
+[REG] x20=00000000
+[REG] x21=00000000
+[REG] x22=00000000
+[REG] x23=00000000
+[REG] x24=00000000
+[REG] x25=00000000
+[REG] x26=00000000
+[REG] x27=00000000
+[REG] x28=00000000
+[REG] x29=00000000
+[REG] x30=00000000
+[REG] x31=00000000
+[SNAPSHOT] memory
+[MEM] m0=00000000
+[MEM] m1=00000000
+[MEM] m2=00000000
+[MEM] m3=00000000
+[MEM] m4=00000000
+[MEM] m96=54873530
+[MEM] m97=03345578
+E:\computerlab\final_acceptance\tb\pl_teacher_tb.v:47: $finish called at 10000000 (1ps)

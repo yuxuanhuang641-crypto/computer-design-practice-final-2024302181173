@@ -1,0 +1,51 @@
+WARNING: E:\computerlab\final_acceptance\tb\pl_teacher_tb.v:22: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: E:\computerlab\final_acceptance\tb\pl_teacher_tb.v:22: $readmemh(E:\computerlab\ComputerDesignLabs-main\CODExp\testcode\task\Test_30_Instr.dat): Not enough words in the file for the requested range [0:255].
+ memaddr = 00000000, memdata = 98763dcc 
+ memaddr = 00000004, memdata = 98765001 
+ memaddr = 00000008, memdata = 00001236 
+ memaddr = 00000000, memdata = 00000000 
+ memaddr = 00000000, memdata = 0000000c 
+ memaddr = 00000010, memdata = 0000055c 
+ memaddr = 0000000c, memdata = 00000561 
+[SNAPSHOT] registers
+[REG] x0=00000000
+[REG] x1=000000cc
+[REG] x2=00000000
+[REG] x3=00000000
+[REG] x4=00000001
+[REG] x5=98763dcc
+[REG] x6=98765000
+[REG] x7=00001236
+[REG] x8=98764c00
+[REG] x9=0000000c
+[REG] x10=00000561
+[REG] x11=00000000
+[REG] x12=00000000
+[REG] x13=00000000
+[REG] x14=00000000
+[REG] x15=00000000
+[REG] x16=00000000
+[REG] x17=00000000
+[REG] x18=00000500
+[REG] x19=98763dcc
+[REG] x20=00000001
+[REG] x21=98765001
+[REG] x22=98766236
+[REG] x23=00001236
+[REG] x24=00000000
+[REG] x25=98767236
+[REG] x26=00000236
+[REG] x27=3dcc0000
+[REG] x28=098763dc
+[REG] x29=f98763dc
+[REG] x30=00000000
+[REG] x31=00000000
+[SNAPSHOT] memory
+[MEM] m0=0000000c
+[MEM] m1=98765001
+[MEM] m2=00001236
+[MEM] m3=00000561
+[MEM] m4=0000055c
+[MEM] m96=00000000
+[MEM] m97=00000000
+E:\computerlab\final_acceptance\tb\pl_teacher_tb.v:47: $finish called at 680000 (1ps)
