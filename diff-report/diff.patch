@@ -1,0 +1,894 @@
+--- a/single-cycle/NPC.v
++++ b/single-cycle/NPC.v
+@@ -1,9 +1,10 @@
+ `include "ctrl_encode_def.v"
+ 
+-module NPC( PC, NPCOp, IMM, NPC );  // next pc module
++module NPC( PC, NPCOp, IMM, RS1, NPC );  // next pc module
+    input  [31:0] PC;        // pc
+    input  [2:0]  NPCOp;     // next pc operation
+    input  [31:0] IMM;       // immediate
++   input  [31:0] RS1;       // rs1 data for jalr
+    output reg [31:0] NPC;   // next pc
+    
+    wire [31:0] PCPLUS4;
+@@ -14,6 +15,7 @@
+           `NPC_PLUS4:  NPC = PCPLUS4;   // NPC computes addr
+           `NPC_BRANCH: NPC = PC+IMM;    //B type, NPC computes addr
+           `NPC_JUMP:   NPC = PC+IMM;    //J type, NPC computes addr
++          `NPC_JALR:   NPC = (RS1 + IMM) & 32'hffff_fffe;
+           default:     NPC = PCPLUS4;
+       endcase
+    end 
+
+--- a/single-cycle/PC.v
++++ b/single-cycle/PC.v
+@@ -9,7 +9,6 @@
+         PC <= 32'h0000_0000;
+      else 
+         PC <= NPC;
+-        $write("\n pc = %h: ", PC);
+    end 
+  endmodule
+ 
+
+--- a/single-cycle/RF.v
++++ b/single-cycle/RF.v
+@@ -21,7 +21,6 @@
+         if (RFWr) begin
+           if(A3 != 5'b0) begin
+               rf[A3] <= WD;
+-              $write("x%d = %h  ", A3, WD);
+           end
+         end
+       end
+
+--- a/single-cycle/SCCPU.v
++++ b/single-cycle/SCCPU.v
+@@ -71,7 +71,7 @@
+ 	);
+  // instantiation of pc unit
+ 	PC  U_PC(.clk(clk), .rst(reset), .NPC(NPC), .PC(PC_out) );
+-	NPC U_NPC(.PC(PC_out), .NPCOp(NPCOp), .IMM(immout), .NPC(NPC));
++	NPC U_NPC(.PC(PC_out), .NPCOp(NPCOp), .IMM(immout), .RS1(RD1), .NPC(NPC));
+ 	EXT U_EXT(
+ 		.iimm(iimm), .simm(simm), .bimm(bimm), .uimm(uimm), .jimm(jimm),
+ 		.EXTOp(EXTOp), .immout(immout)
+@@ -99,4 +99,4 @@
+ 	endcase
+ end
+ 
+-endmodule+endmodule
+
+--- a/single-cycle/alu.v
++++ b/single-cycle/alu.v
+@@ -9,22 +9,33 @@
+    reg [31:0] C;
+    integer    i;
+        
+-   always @( * ) begin
+-      case ( ALUOp )
+-      `ALUOp_lui:C=B;
+-      `ALUOp_add:C=A+B;
+-      `ALUOp_sub:C=A-B;  //and beq
+-      `ALUOp_xor:C=A^B;
+-      `ALUOp_or:C=A|B;
+-      `ALUOp_and:C=A&B;
+-      `ALUOp_sll:C=A<<B;
+-      `ALUOp_srl:C=A>>B;
+-      `ALUOp_sra:C=A>>>B;
+-      default: C=A;
++   always @(*) begin
++      case (ALUOp)
++      `ALUOp_lui:  C = B;
++      `ALUOp_add:  C = A + B;
++      `ALUOp_sub:  C = A - B;
++      `ALUOp_bne:  C = (A != B);
++      `ALUOp_blt:  C = (A < B);
++      `ALUOp_bge:  C = (A >= B);
++      `ALUOp_bltu: C = ($unsigned(A) < $unsigned(B));
++      `ALUOp_bgeu: C = ($unsigned(A) >= $unsigned(B));
++      `ALUOp_slt:  C = (A < B) ? 32'd1 : 32'd0;
++      `ALUOp_sltu: C = ($unsigned(A) < $unsigned(B)) ? 32'd1 : 32'd0;
++      `ALUOp_xor:  C = A ^ B;
++      `ALUOp_or:   C = A | B;
++      `ALUOp_and:  C = A & B;
++      `ALUOp_sll:  C = A << B[4:0];
++      `ALUOp_srl:  C = $unsigned(A) >> B[4:0];
++      `ALUOp_sra:  C = A >>> B[4:0];
++      default:     C = A;
+       endcase
+-   end // end always
+-   
+-   assign Zero = (C == 32'b0);  
++   end
++
++   assign Zero = (ALUOp == `ALUOp_bne ||
++                  ALUOp == `ALUOp_blt ||
++                  ALUOp == `ALUOp_bge ||
++                  ALUOp == `ALUOp_bltu ||
++                  ALUOp == `ALUOp_bgeu) ? (C != 32'b0) : (C == 32'b0);
+ 
+ endmodule
+     
+
+--- a/single-cycle/ctrl.v
++++ b/single-cycle/ctrl.v
+@@ -1,106 +1,129 @@
+- `include "ctrl_encode_def.v"
++`include "ctrl_encode_def.v"
+ 
+-module ctrl(Op, Funct7, Funct3, Zero, 
++module ctrl(Op, Funct7, Funct3, Zero,
+             RegWrite, MemWrite,
+-            EXTOp, ALUOp, NPCOp, 
++            EXTOp, ALUOp, NPCOp,
+             ALUSrc, WDSel
+             );
+-            
+-   input  [6:0] Op;       // opcode
+-   input  [6:0] Funct7;    // funct7
+-   input  [2:0] Funct3;    // funct3
++
++   input  [6:0] Op;
++   input  [6:0] Funct7;
++   input  [2:0] Funct3;
+    input        Zero;
+-   
+-   output       RegWrite; // control signal for register write
+-   output       MemWrite; // control signal for memory write
+-   output [5:0] EXTOp;    // control signal to signed extension
+-   output [4:0] ALUOp;    // ALU opertion
+-   output [2:0] NPCOp;    // next pc operation
+-   output       ALUSrc;   // ALU source for B 
+-   output [1:0] WDSel;    // (register) write data selection
+-   
+-   //Op[6]&Op[5]&Op[4]&Op[3]&Op[2]&Op[1]&Op[0];
+-   
+-   //LUI
+-   wire LUI = ~Op[6]&Op[5]&Op[4]&~Op[3]&Op[2]&Op[1]&Op[0];
+-      
+-  // r format 0110011
+-    wire rtype  = ~Op[6]&Op[5]&Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0110011
+-    wire i_add  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]&~Funct3[2]&~Funct3[1]&~Funct3[0]; // add 0000000 000
+-    wire i_sub  = rtype& ~Funct7[6]& Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]&~Funct3[2]&~Funct3[1]&~Funct3[0]; // sub 0100000 000
+-    wire i_or   = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]& Funct3[1]&~Funct3[0]; // or 0000000 110
+-    wire i_and  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]& Funct3[1]& Funct3[0]; // and 0000000 111
+-    wire i_xor  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]&~Funct3[1]&~Funct3[0]; // xor 0000000 100
+-    wire i_sll  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]&~Funct3[2]&~Funct3[1]& Funct3[0]; // sll 0000000 001
+-    wire i_srl  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]&~Funct3[1]& Funct3[0]; // srl 0000000 101
+-    wire i_sra  = rtype& ~Funct7[6]& Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]&~Funct3[1]& Funct3[0]; // sra 0100000 101
+ 
+- // i format load 0000011
+-    wire itype_l  = ~Op[6]&~Op[5]&~Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0000011
+-    wire i_lw = itype_l&~Funct3[2]& Funct3[1]&~Funct3[0];//lw 010
++   output reg       RegWrite;
++   output reg       MemWrite;
++   output reg [5:0] EXTOp;
++   output reg [4:0] ALUOp;
++   output reg [2:0] NPCOp;
++   output reg       ALUSrc;
++   output reg [1:0] WDSel;
+ 
+-  // i format 0010011
+-    wire itype_r  = ~Op[6]&~Op[5]&Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0010011
+-    wire i_addi  =  itype_r& ~Funct3[2]& ~Funct3[1]& ~Funct3[0]; // addi 000
+-    	
+-  // s format 0100011
+-    wire stype  = ~Op[6]&Op[5]&~Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0100011
+-    wire i_sw   =  stype& ~Funct3[2]& Funct3[1]&~Funct3[0]; // sw 010
++   always @(*) begin
++      RegWrite = 1'b0;
++      MemWrite = 1'b0;
++      EXTOp    = 6'b0;
++      ALUOp    = `ALUOp_nop;
++      NPCOp    = `NPC_PLUS4;
++      ALUSrc   = 1'b0;
++      WDSel    = `WDSel_FromALU;
+ 
+-  // sb format 1100011
+-    wire sbtype  = Op[6]&Op[5]&~Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0];//1100011
+-    wire i_beq  = sbtype& ~Funct3[2]& ~Funct3[1]&~Funct3[0]; // beq 000
++      case (Op)
++      7'b0110111: begin // lui
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_UTYPE;
++         ALUOp    = `ALUOp_lui;
++      end
+ 
+-  // j format
+-    wire i_jal  = Op[6]& Op[5]&~Op[4]& Op[3]& Op[2]& Op[1]& Op[0];  // jal 1101111
++      7'b0110011: begin // R-type
++         RegWrite = 1'b1;
++         case ({Funct7, Funct3})
++         {7'b0000000, 3'b000}: ALUOp = `ALUOp_add;
++         {7'b0100000, 3'b000}: ALUOp = `ALUOp_sub;
++         {7'b0000000, 3'b010}: ALUOp = `ALUOp_slt;
++         {7'b0000000, 3'b011}: ALUOp = `ALUOp_sltu;
++         {7'b0000000, 3'b100}: ALUOp = `ALUOp_xor;
++         {7'b0000000, 3'b110}: ALUOp = `ALUOp_or;
++         {7'b0000000, 3'b111}: ALUOp = `ALUOp_and;
++         {7'b0000000, 3'b001}: ALUOp = `ALUOp_sll;
++         {7'b0000000, 3'b101}: ALUOp = `ALUOp_srl;
++         {7'b0100000, 3'b101}: ALUOp = `ALUOp_sra;
++         default: begin
++            RegWrite = 1'b0;
++            ALUOp = `ALUOp_nop;
++         end
++         endcase
++      end
+ 
+-  // generate control signals
+-  assign RegWrite   = rtype | itype_r | LUI | itype_l; // register write
+-  assign MemWrite   = stype;                           // memory write
+-  assign ALUSrc     = itype_r | LUI | itype_l | stype;   // ALU B is from instruction immediate
++      7'b0010011: begin // I-type arithmetic
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_ITYPE;
++         case (Funct3)
++         3'b000: ALUOp = `ALUOp_add;  // addi
++         3'b010: ALUOp = `ALUOp_slt;  // slti
++         3'b011: ALUOp = `ALUOp_sltu; // sltiu
++         3'b100: ALUOp = `ALUOp_xor;  // xori
++         3'b110: ALUOp = `ALUOp_or;   // ori
++         3'b111: ALUOp = `ALUOp_and;  // andi
++         3'b001: ALUOp = (Funct7 == 7'b0000000) ? `ALUOp_sll : `ALUOp_nop;
++         3'b101: ALUOp = (Funct7 == 7'b0100000) ? `ALUOp_sra : `ALUOp_srl;
++         default: begin
++            RegWrite = 1'b0;
++            ALUOp = `ALUOp_nop;
++         end
++         endcase
++      end
+ 
+-  // signed extension
+-  // EXT_CTRL_ITYPE_SHAMT 6'b100000
+-  // EXT_CTRL_ITYPE	      6'b010000
+-  // EXT_CTRL_STYPE	      6'b001000
+-  // EXT_CTRL_BTYPE	      6'b000100
+-  // EXT_CTRL_UTYPE	      6'b000010
+-  // EXT_CTRL_JTYPE	      6'b000001
+-  assign EXTOp[5]    = 0;
+-  assign EXTOp[4]    = i_addi | itype_l;
+-  assign EXTOp[3]    = stype; 
+-  assign EXTOp[2]    = sbtype; 
+-  assign EXTOp[1]    = LUI;
+-  assign EXTOp[0]    = i_jal;         
+-  
+-  // WDSel_FromALU 2'b00
+-  // WDSel_FromMEM 2'b01
+-  // WDSel_FromPC  2'b10 
+-    assign WDSel[1] = i_jal;
+-    assign WDSel[0] = itype_l;
++      7'b0000011: begin // lw
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_ITYPE;
++         ALUOp    = `ALUOp_add;
++         WDSel    = `WDSel_FromMEM;
++      end
+ 
+-  // NPC_PLUS4   3'b000
+-  // NPC_BRANCH  3'b001
+-  // NPC_JUMP    3'b010
+-  // NPC_JALR	   3'b100
+-    assign NPCOp[2] = 0;
+-    assign NPCOp[1] = i_jal;
+-    assign NPCOp[0] = sbtype & Zero;
++      7'b0100011: begin // sw
++         MemWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_STYPE;
++         ALUOp    = `ALUOp_add;
++      end
+ 
+-// ALUOp_nop 5'b00000
+-// ALUOp_lui 5'b00001
+-// ALUOp_add 5'b00011
+-// ALUOp_sub 5'b00100
+-// ALUOp_xor 5'b01100
+-// ALUOp_or 5'b01101
+-// ALUOp_and 5'b01110
+-// ALUOp_sll 5'b01111
+-// ALUOp_srl 5'b10000
+-// ALUOp_sra 5'b10001
+-    assign ALUOp[4] = i_srl | i_sra;
+-    assign ALUOp[3] = i_and | i_or | i_sll | i_xor;
+-    assign ALUOp[2] = i_and | i_or | i_sub | i_beq | i_sll | i_xor;
+-    assign ALUOp[1] = i_addi | i_add | i_and | i_sll | itype_l | stype ;
+-	  assign ALUOp[0] = i_addi | i_add | i_or | LUI | i_sll | i_sra | itype_l | stype ;
++      7'b1100011: begin // branches
++         EXTOp = `EXT_CTRL_BTYPE;
++         case (Funct3)
++         3'b000: begin ALUOp = `ALUOp_sub;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // beq
++         3'b001: begin ALUOp = `ALUOp_bne;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bne
++         3'b100: begin ALUOp = `ALUOp_blt;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // blt
++         3'b101: begin ALUOp = `ALUOp_bge;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bge
++         3'b110: begin ALUOp = `ALUOp_bltu; NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bltu
++         3'b111: begin ALUOp = `ALUOp_bgeu; NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bgeu
++         default: begin ALUOp = `ALUOp_nop; NPCOp = `NPC_PLUS4; end
++         endcase
++      end
+ 
++      7'b1101111: begin // jal
++         RegWrite = 1'b1;
++         EXTOp    = `EXT_CTRL_JTYPE;
++         NPCOp    = `NPC_JUMP;
++         WDSel    = `WDSel_FromPC;
++      end
++
++      7'b1100111: begin // jalr
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_ITYPE;
++         ALUOp    = `ALUOp_add;
++         NPCOp    = `NPC_JALR;
++         WDSel    = `WDSel_FromPC;
++      end
++
++      default: begin
++         RegWrite = 1'b0;
++         MemWrite = 1'b0;
++      end
++      endcase
++   end
+ endmodule
+
+--- a/single-cycle/dm.v
++++ b/single-cycle/dm.v
+@@ -12,7 +12,6 @@
+    always @(posedge clk)
+       if (DMWr) begin
+          dmem[addr[8:2]] <= din;
+-         $write(" memaddr = %h, memdata = %h", addr[31:0], din);
+       end
+    
+      //load
+
+--- a/single-cycle/sccomp_tb.v
++++ b/single-cycle/sccomp_tb.v
+@@ -1,25 +0,0 @@
+-`timescale 1ns/1ns 
+-module sccomp_tb();
+-   reg    clk, rstn;
+-   reg  [4:0] reg_sel;
+-   wire [31:0] reg_data;
+-
+-   // instantiation of sccomp
+-   sccomp sccomp(.clk(clk), .rstn(rstn), .reg_sel(reg_sel), .reg_data(reg_data));
+-
+-   initial begin
+-     // input instructions for simulation, rv32_sc_sim
+-      $readmemh("rv32_sc_sim.dat", sccomp.U_imem.RAM);
+-
+-      clk = 1;
+-      rstn = 1;
+-      #10 ;
+-      rstn = 0;
+-      reg_sel = 7;
+-   end
+-   
+-   always begin
+-      #(5) clk = ~clk;
+-   end
+-   
+-endmodule
+
+--- a/pipeline/EXT.v
++++ b/pipeline/EXT.v
+@@ -2,7 +2,9 @@
+ module EXT( 
+     input	[11:0]			iimm, //instr[31:20], 12 bits
+ 	input	[11:0]			simm, //instr[31:25, 11:7], 12 bits
++	input	[11:0]			bimm, //instr[31], instr[7], instr[30:25], instr[11:8]
+ 	input	[19:0]			uimm, // U type
++	input   [19:0]          jimm, // J type
+ 	input	[5:0]			EXTOp,
+ 
+ 	output	reg [31:0] 	    immout
+@@ -12,7 +14,9 @@
+ 	 case (EXTOp)
+ 		`EXT_CTRL_ITYPE:	immout <= {{20{iimm[11]}}, iimm[11:0]};
+ 		`EXT_CTRL_STYPE:	immout <= {{20{simm[11]}}, simm[11:0]};
++		`EXT_CTRL_BTYPE:    immout <= {{19{bimm[11]}}, bimm[11:0], 1'b0};
+ 		`EXT_CTRL_UTYPE:	immout <= {uimm[19:0], 12'b0};     //???????????12??0
++		`EXT_CTRL_JTYPE:    immout <= {{11{jimm[19]}}, jimm[19:0], 1'b0};
+ 		default:	        immout <= 32'b0;
+ 	 endcase
+        
+
+--- a/pipeline/NPC.v
++++ b/pipeline/NPC.v
+@@ -1,9 +1,11 @@
+ `include "ctrl_encode_def.v"
+ 
+-module NPC(PC, NPCOp, IMM, NPC);  // next pc module
+-   input  [31:0] PC;        // pc
++module NPC(PC, JumpPC, NPCOp, IMM, RS1, NPC);  // next pc module
++   input  [31:0] PC;        // current fetch pc
++   input  [31:0] JumpPC;    // pc of the control-flow instruction in EX
+    input  [4:0]  NPCOp;     // next pc operation
+    input  [31:0] IMM;       // immediate
++   input  [31:0] RS1;       // rs1 data for jalr
+    output reg [31:0] NPC;   // next pc
+    
+    wire [31:0] PCPLUS4;
+@@ -12,6 +14,9 @@
+    always @(*) begin
+         case (NPCOp)
+             `NPC_PLUS4:  NPC = PCPLUS4;
++            `NPC_BRANCH: NPC = JumpPC + IMM;
++            `NPC_JUMP:   NPC = JumpPC + IMM;
++            `NPC_JALR:   NPC = (RS1 + IMM) & 32'hffff_fffe;
+   
+             default:     NPC = PCPLUS4;
+         endcase
+
+--- a/pipeline/PLCPU.v
++++ b/pipeline/PLCPU.v
+@@ -41,6 +41,8 @@
+ 	wire [11:0] iimm,simm,bimm;
+ 	wire [19:0] uimm,jimm;
+ 	wire [31:0] immout;
++    wire [2:0] EX_DMType;
++    wire [2:0] MEM_DMType;
+ 	
+ 	//EX wires
+ 	wire [4:0] EX_rd;
+@@ -115,10 +117,10 @@
+  // instantiation of pc unit
+ 	PC U_PC(.clk(~clk), .rst(reset), .NPC(NPC), .PC(PC_out) );
+ 	NPC U_NPC(.PC(PC_out), .NPCOp(EX_NPCOp),
+-	          .IMM(EX_immout), .NPC(NPC));
++	          .JumpPC(EX_pc), .IMM(EX_immout), .RS1(A), .NPC(NPC));
+ 	EXT U_EXT(
+-		.iimm(iimm), .simm(simm), 
+-		.uimm(uimm), .EXTOp(EXTOp), .immout(immout)
++		.iimm(iimm), .simm(simm), .bimm(bimm),
++		.uimm(uimm), .jimm(jimm), .EXTOp(EXTOp), .immout(immout)
+ 	);
+ 	RF U_RF(
+ 		.clk(clk), .rst(reset),
+@@ -132,12 +134,37 @@
+ 	
+ //please connnect the CPU by yourself
+ 
++    wire [31:0] mem_forward_value;
++    wire [31:0] wb_forward_value;
++    wire [31:0] forward_RD1;
++    wire [31:0] forward_RD2;
++
++    assign mem_forward_value =
++        (MEM_WDSel == `WDSel_FromPC)  ? (EX_MEM_out[31:0] + 4) :
++        (MEM_WDSel == `WDSel_FromMEM) ? Data_in :
++                                         MEM_aluout;
++
++    assign wb_forward_value =
++        (WB_WDSel == `WDSel_FromPC)  ? (WB_pc + 4) :
++        (WB_WDSel == `WDSel_FromMEM) ? WB_MemData :
++                                       WB_aluout;
++
++    assign forward_RD1 =
++        (MEM_RegWrite && (MEM_rd != 5'b0) && (MEM_rd == EX_rs1)) ? mem_forward_value :
++        (WB_RegWrite  && (WB_rd  != 5'b0) && (WB_rd  == EX_rs1)) ? wb_forward_value  :
++                                                                   EX_RD1;
++
++    assign forward_RD2 =
++        (MEM_RegWrite && (MEM_rd != 5'b0) && (MEM_rd == EX_rs2)) ? mem_forward_value :
++        (WB_RegWrite  && (WB_rd  != 5'b0) && (WB_rd  == EX_rs2)) ? wb_forward_value  :
++                                                                   EX_RD2;
++
+ //WD MUX
+ always @(*)
+ begin
+ 	case(WB_WDSel)
+-		`WDSel_FromALU: WD<=WB_aluout;
+-		`WDSel_FromMEM: WD<=WB_MemData;
++		`WDSel_FromALU: WD=WB_aluout;
++		`WDSel_FromMEM: WD=WB_MemData;
+ 		`WDSel_FromPC:  WD<=WB_pc+4;  //WB_pc��ǰ�漸����δ��4����Jָ��ԭʼ��ַ
+ 	endcase
+ end
+@@ -148,22 +175,27 @@
+ 
+     always @(*) 
+     begin
+-        alu_in1 <= EX_RD1; //from regfile
+-        alu_in2 <= EX_RD2; //from regfile
++        alu_in1 = forward_RD1; //from regfile or forwarding paths
++        alu_in2 = forward_RD2; //from regfile or forwarding paths
+     end
+     
+     always @(*) 
+-        memdata_wr <= MEM_RD2;//from MEM
++        memdata_wr = MEM_RD2;//from MEM
+         
+     assign A = alu_in1;
+     assign B = (EX_ALUSrc) ? EX_immout : alu_in2;//whether from EXT
+ 
++    wire jump_flush;
++    assign jump_flush = (EX_NPCOp != `NPC_PLUS4);
++
+ //-----pipe registers--------------
+ 
+     //IF_ID: [31:0] PC [31:0]instr
++    wire [63:0] IF_ID_raw_in;
+     wire [63:0] IF_ID_in;
+-    assign IF_ID_in[31:0] = PC_out;//original addr of the current ins in ID, not PC+4
+-    assign IF_ID_in[63:32] = inst_in;
++    assign IF_ID_raw_in[31:0] = PC_out;//original addr of the current ins in ID, not PC+4
++    assign IF_ID_raw_in[63:32] = inst_in;
++    assign IF_ID_in = jump_flush ? 64'b0 : IF_ID_raw_in;
+ 
+     wire [63:0] IF_ID_out;
+     assign instr = IF_ID_out[63:32];
+@@ -174,23 +206,25 @@
+ 
+ 
+     //ID_EX
++    wire [193:0] ID_EX_raw_in;
+     wire [193:0] ID_EX_in;
+-    assign ID_EX_in[31:0] = IF_ID_out[31:0];//PC
+-    assign ID_EX_in[36:32] = rd;
+-    assign ID_EX_in[41:37] = rs1;
+-    assign ID_EX_in[46:42] = rs2;
+-    assign ID_EX_in[78:47] = immout;
+-    assign ID_EX_in[110:79] = RD1;
+-    assign ID_EX_in[142:111] = RD2;
+-    assign ID_EX_in[143] = RegWrite;//RFWr
+-    assign ID_EX_in[144] = ID_MemWrite;//DMWr
+-    assign ID_EX_in[149:145] = ALUOp;
+-    assign ID_EX_in[154:150] = NPCOp;
+-    assign ID_EX_in[155] = ALUSrc;
+-    assign ID_EX_in[158:156] = 3'b000;  //nop, reserved for mem access
+-    assign ID_EX_in[160:159] = WDSel;
+-    assign ID_EX_in[161] = ID_MemRead;
+-    assign ID_EX_in[193:162] = IF_ID_out[63:32];
++    assign ID_EX_raw_in[31:0] = IF_ID_out[31:0];//PC
++    assign ID_EX_raw_in[36:32] = rd;
++    assign ID_EX_raw_in[41:37] = rs1;
++    assign ID_EX_raw_in[46:42] = rs2;
++    assign ID_EX_raw_in[78:47] = immout;
++    assign ID_EX_raw_in[110:79] = RD1;
++    assign ID_EX_raw_in[142:111] = RD2;
++    assign ID_EX_raw_in[143] = RegWrite;//RFWr
++    assign ID_EX_raw_in[144] = ID_MemWrite;//DMWr
++    assign ID_EX_raw_in[149:145] = ALUOp;
++    assign ID_EX_raw_in[154:150] = NPCOp;
++    assign ID_EX_raw_in[155] = ALUSrc;
++    assign ID_EX_raw_in[158:156] = 3'b000;  //nop, reserved for mem access
++    assign ID_EX_raw_in[160:159] = WDSel;
++    assign ID_EX_raw_in[161] = ID_MemRead;
++    assign ID_EX_raw_in[193:162] = IF_ID_out[63:32];
++    assign ID_EX_in = jump_flush ? 194'b0 : ID_EX_raw_in;
+ 
+     wire [193:0] ID_EX_out;
+     //wire [31:0] EX_inst;
+@@ -274,4 +308,4 @@
+     (.clk(~clk), .rst(reset), 
+     .in(MEM_WB_in), .out(MEM_WB_out));
+ 
+-endmodule+endmodule
+
+--- a/pipeline/alu.v
++++ b/pipeline/alu.v
+@@ -4,27 +4,36 @@
+    input  signed [31:0] A, B;
+    input         [4:0]  ALUOp;
+    output signed [31:0] C;
+-   output Zero;  //condition flag: set if condition is true for B-type instruction
+-   
++   output Zero;
++
+    reg [31:0] C;
+-   integer    i;
+-       
+-   always @( * ) begin
+-      case ( ALUOp )
+-        `ALUOp_lui:C=B;
+-        `ALUOp_add:C=A+B;
+-        `ALUOp_sub:C=A-B;  //and beq
+-        `ALUOp_xor:C=A^B;
+-        `ALUOp_or:C=A|B;
+-        `ALUOp_and:C=A&B;
+-        `ALUOp_sll:C=A<<B;
+-        `ALUOp_srl:C=A>>B;
+-        `ALUOp_sra:C=A>>>B;
+-        default: C=A;
++
++   always @(*) begin
++      case (ALUOp)
++      `ALUOp_lui:  C = B;
++      `ALUOp_add:  C = A + B;
++      `ALUOp_sub:  C = A - B;
++      `ALUOp_bne:  C = (A != B);
++      `ALUOp_blt:  C = (A < B);
++      `ALUOp_bge:  C = (A >= B);
++      `ALUOp_bltu: C = ($unsigned(A) < $unsigned(B));
++      `ALUOp_bgeu: C = ($unsigned(A) >= $unsigned(B));
++      `ALUOp_slt:  C = (A < B) ? 32'd1 : 32'd0;
++      `ALUOp_sltu: C = ($unsigned(A) < $unsigned(B)) ? 32'd1 : 32'd0;
++      `ALUOp_xor:  C = A ^ B;
++      `ALUOp_or:   C = A | B;
++      `ALUOp_and:  C = A & B;
++      `ALUOp_sll:  C = A << B[4:0];
++      `ALUOp_srl:  C = $unsigned(A) >> B[4:0];
++      `ALUOp_sra:  C = A >>> B[4:0];
++      default:     C = A;
+       endcase
+-   end 
+-   
+-   assign Zero = (C == 32'b0);  
++   end
++
++   assign Zero = (ALUOp == `ALUOp_bne ||
++                  ALUOp == `ALUOp_blt ||
++                  ALUOp == `ALUOp_bge ||
++                  ALUOp == `ALUOp_bltu ||
++                  ALUOp == `ALUOp_bgeu) ? (C != 32'b0) : (C == 32'b0);
+ 
+ endmodule
+-    
+
+--- a/pipeline/ctrl.v
++++ b/pipeline/ctrl.v
+@@ -1,99 +1,138 @@
+- `include "ctrl_encode_def.v"
++`include "ctrl_encode_def.v"
+ 
+-module ctrl(Op, Funct7, Funct3, Zero, 
++module ctrl(Op, Funct7, Funct3, Zero,
+             RegWrite, MemWrite, MemRead,
+-            EXTOp, ALUOp, NPCOp, 
++            EXTOp, ALUOp, NPCOp,
+             ALUSrc, WDSel
+             );
+-            
+-   input  [6:0] Op;       // opcode
+-   input  [6:0] Funct7;    // funct7
+-   input  [2:0] Funct3;    // funct3
++
++   input  [6:0] Op;
++   input  [6:0] Funct7;
++   input  [2:0] Funct3;
+    input        Zero;
+-   
+-   output       RegWrite; // control signal for register write
+-   output       MemWrite; // control signal for memory write
+-   output       MemRead;  // control signal for memory read
+-   output [5:0] EXTOp;    // control signal to signed extension
+-   output [4:0] ALUOp;    // ALU opertion
+-   output [4:0] NPCOp;    // next pc operation
+-   output       ALUSrc;   // ALU source for B
+-   output [1:0] WDSel;    // (register) write data selection
+-   
+-   //LUI
+-   wire LUI = ~Op[6]&Op[5]&Op[4]&~Op[3]&Op[2]&Op[1]&Op[0];
+ 
+-  // r format 0110011
+-    wire rtype  = ~Op[6]&Op[5]&Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0110011
+-    wire i_add  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]&~Funct3[2]&~Funct3[1]&~Funct3[0]; // add 0000000 000
+-    wire i_sub  = rtype& ~Funct7[6]& Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]&~Funct3[2]&~Funct3[1]&~Funct3[0]; // sub 0100000 000
+-    wire i_or   = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]& Funct3[1]&~Funct3[0]; // or 0000000 110
+-    wire i_and  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]& Funct3[1]& Funct3[0]; // and 0000000 111
+-    wire i_xor  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]&~Funct3[1]&~Funct3[0]; // xor 0000000 100
+-    wire i_sll  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]&~Funct3[2]&~Funct3[1]& Funct3[0]; // sll 0000000 001
+-    wire i_srl  = rtype& ~Funct7[6]&~Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]&~Funct3[1]& Funct3[0]; // srl 0000000 101
+-    wire i_sra  = rtype& ~Funct7[6]& Funct7[5]&~Funct7[4]&~Funct7[3]&~Funct7[2]&~Funct7[1]&~Funct7[0]& Funct3[2]&~Funct3[1]& Funct3[0]; // sra 0100000 101
++   output reg       RegWrite;
++   output reg       MemWrite;
++   output reg       MemRead;
++   output reg [5:0] EXTOp;
++   output reg [4:0] ALUOp;
++   output reg [4:0] NPCOp;
++   output reg       ALUSrc;
++   output reg [1:0] WDSel;
+ 
+-  // i format load 0000011
+-    wire itype_l  = ~Op[6]&~Op[5]&~Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0000011
+-    wire i_lw = itype_l&~Funct3[2]& Funct3[1]&~Funct3[0];//lw 010   
+-    
+-  // i format 0010011
+-    wire itype_r  = ~Op[6]&~Op[5]&Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0]; //0010011
+-    wire i_addi  =  itype_r& ~Funct3[2]& ~Funct3[1]& ~Funct3[0]; // addi 000
++   always @(*) begin
++      RegWrite = 1'b0;
++      MemWrite = 1'b0;
++      MemRead  = 1'b0;
++      EXTOp    = 6'b0;
++      ALUOp    = `ALUOp_nop;
++      NPCOp    = `NPC_PLUS4;
++      ALUSrc   = 1'b0;
++      WDSel    = `WDSel_FromALU;
+ 
+-  // s format 0100011
+-    wire stype  = ~Op[6]&Op[5]&~Op[4]&~Op[3]&~Op[2]&Op[1]&Op[0];//0100011
+-    wire i_sw   =  stype& ~Funct3[2]& Funct3[1]&~Funct3[0]; // sw 010
+-    
+-  // generate control signals
+-  assign RegWrite   = rtype | itype_r | LUI | itype_l; // register write
+-  assign MemWrite   = stype;                // memory write
+-  assign MemRead    = itype_l;              // memory read
+-  assign ALUSrc     = itype_r | stype | LUI | itype_l;   // ALU B is from instruction immediate
++      case (Op)
++      7'b0110111: begin // lui
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_UTYPE;
++         ALUOp    = `ALUOp_lui;
++      end
+ 
+-  // signed extension
+-  // EXT_CTRL_ITYPE_SHAMT 6'b100000
+-  // EXT_CTRL_ITYPE	      6'b010000
+-  // EXT_CTRL_STYPE	      6'b001000
+-  // EXT_CTRL_BTYPE	      6'b000100
+-  // EXT_CTRL_UTYPE	      6'b000010
+-  // EXT_CTRL_JTYPE	      6'b000001
+-  assign EXTOp[5]    = 0;
+-  assign EXTOp[4]    = i_addi | itype_l;
+-  assign EXTOp[3]    = stype; 
+-  assign EXTOp[2]    = 0; 
+-  assign EXTOp[1]    = LUI;
+-  assign EXTOp[0]    = 0;         
+-    
+-  // WDSel_FromALU 2'b00
+-  // WDSel_FromMEM 2'b01
+-  // WDSel_FromPC  2'b10 
+-    assign WDSel[1] = 0;
+-    assign WDSel[0] = itype_l;
++      7'b0110011: begin // R-type
++         RegWrite = 1'b1;
++         case ({Funct7, Funct3})
++         {7'b0000000, 3'b000}: ALUOp = `ALUOp_add;
++         {7'b0100000, 3'b000}: ALUOp = `ALUOp_sub;
++         {7'b0000000, 3'b010}: ALUOp = `ALUOp_slt;
++         {7'b0000000, 3'b011}: ALUOp = `ALUOp_sltu;
++         {7'b0000000, 3'b100}: ALUOp = `ALUOp_xor;
++         {7'b0000000, 3'b110}: ALUOp = `ALUOp_or;
++         {7'b0000000, 3'b111}: ALUOp = `ALUOp_and;
++         {7'b0000000, 3'b001}: ALUOp = `ALUOp_sll;
++         {7'b0000000, 3'b101}: ALUOp = `ALUOp_srl;
++         {7'b0100000, 3'b101}: ALUOp = `ALUOp_sra;
++         default: begin
++            RegWrite = 1'b0;
++            ALUOp = `ALUOp_nop;
++         end
++         endcase
++      end
+ 
+-// NPC_PLUS4      5'b00000
+-// NPC_BRANCH     5'b00001
+-// NPC_JUMP       5'b00010
+-// NPC_JALR       5'b00100
+-    assign NPCOp[2] = 0;
+-    assign NPCOp[1] = 0;
+-    assign NPCOp[0] = 0;
++      7'b0010011: begin // I-type arithmetic and shifts
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_ITYPE;
++         case (Funct3)
++         3'b000: ALUOp = `ALUOp_add;  // addi
++         3'b010: ALUOp = `ALUOp_slt;  // slti
++         3'b011: ALUOp = `ALUOp_sltu; // sltiu
++         3'b100: ALUOp = `ALUOp_xor;  // xori
++         3'b110: ALUOp = `ALUOp_or;   // ori
++         3'b111: ALUOp = `ALUOp_and;  // andi
++         3'b001: ALUOp = (Funct7 == 7'b0000000) ? `ALUOp_sll : `ALUOp_nop;
++         3'b101: ALUOp = (Funct7 == 7'b0100000) ? `ALUOp_sra : `ALUOp_srl;
++         default: begin
++            RegWrite = 1'b0;
++            ALUOp = `ALUOp_nop;
++         end
++         endcase
++      end
+ 
+-// ALUOp_nop 5'b00000
+-// ALUOp_lui 5'b00001
+-// ALUOp_add 5'b00011
+-// ALUOp_sub 5'b00100
+-// ALUOp_xor 5'b01100
+-// ALUOp_or 5'b01101
+-// ALUOp_and 5'b01110
+-// ALUOp_sll 5'b01111
+-// ALUOp_srl 5'b10000
+-// ALUOp_sra 5'b10001
+-    assign ALUOp[4] = i_srl | i_sra;
+-    assign ALUOp[3] = i_and | i_or | i_sll | i_xor;
+-    assign ALUOp[2] = i_and | i_or | i_sub | i_sll | i_xor;
+-    assign ALUOp[1] = i_addi | i_add | i_and | i_sll | itype_l | stype ;
+-	  assign ALUOp[0] = i_addi | i_add | i_or | LUI | i_sll | i_sra | itype_l | stype ;
+-	
++      7'b0000011: begin // lw
++         RegWrite = 1'b1;
++         MemRead  = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_ITYPE;
++         ALUOp    = `ALUOp_add;
++         WDSel    = `WDSel_FromMEM;
++      end
++
++      7'b0100011: begin // sw
++         MemWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_STYPE;
++         ALUOp    = `ALUOp_add;
++      end
++
++      7'b1100011: begin // B-type branches
++         EXTOp = `EXT_CTRL_BTYPE;
++         NPCOp = `NPC_BRANCH;
++         case (Funct3)
++         3'b000: ALUOp = `ALUOp_sub;  // beq
++         3'b001: ALUOp = `ALUOp_bne;  // bne
++         3'b100: ALUOp = `ALUOp_blt;  // blt
++         3'b101: ALUOp = `ALUOp_bge;  // bge
++         3'b110: ALUOp = `ALUOp_bltu; // bltu
++         3'b111: ALUOp = `ALUOp_bgeu; // bgeu
++         default: begin
++            ALUOp = `ALUOp_nop;
++            NPCOp = `NPC_PLUS4;
++         end
++         endcase
++      end
++
++      7'b1101111: begin // jal
++         RegWrite = 1'b1;
++         EXTOp    = `EXT_CTRL_JTYPE;
++         NPCOp    = `NPC_JUMP;
++         WDSel    = `WDSel_FromPC;
++      end
++
++      7'b1100111: begin // jalr
++         RegWrite = 1'b1;
++         ALUSrc   = 1'b1;
++         EXTOp    = `EXT_CTRL_ITYPE;
++         ALUOp    = `ALUOp_add;
++         NPCOp    = `NPC_JALR;
++         WDSel    = `WDSel_FromPC;
++      end
++
++      default: begin
++         RegWrite = 1'b0;
++         MemWrite = 1'b0;
++         MemRead  = 1'b0;
++      end
++      endcase
++   end
++
+ endmodule
+
+--- a/pipeline/plcomp_tb.v
++++ b/pipeline/plcomp_tb.v
+@@ -1,28 +0,0 @@
+-`timescale 1ns/1ns 
+-module plcomp_tb();
+-  reg   clk, rstn;
+-  integer i=0;  //for debug
+-
+-  // instantiation of plcomp
+-  plcomp plcomp(clk, rstn);
+-  
+-  initial begin
+-    // input instructions for simulation
+-    $readmemh("rv32_pl_sim.dat", plcomp.U_imem.RAM); //( 21 ins-25cycles )
+-    clk = 0;
+-    rstn = 1;
+-    #50 ;
+-    rstn = 0;
+-  end
+-  
+-  always begin
+-    #(5) clk = ~clk;
+-  end
+-
+-  always @(posedge clk) begin   //for debug
+-       i=i+1;
+-       if (clk) $write("\n cycle=%d, IF_PC=%h, IF_ins=%h, ", i, plcomp.PC, plcomp.instr );
+-       if (plcomp.U_PLCPU.U_RF.RFWr && plcomp.U_PLCPU.U_RF.A3) $write("x%d = %h  ", plcomp.U_PLCPU.U_RF.A3, plcomp.U_PLCPU.U_RF.WD) ;
+-  end
+-      
+-endmodule

@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verilog Diff Report</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --muted: #656d76;
+      --bg: #f6f8fa;
+      --add-bg: #dafbe1;
+      --add-line: #aceebb;
+      --del-bg: #ffebe9;
+      --del-line: #ffcecb;
+      --code-bg: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    .meta, .numbers { color: var(--muted); }
+    .overview, .warnings, .summary, .file {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+    .overview { padding: 16px 18px; }
+    .overview ul, .warnings ul { margin: 8px 0 0; padding-left: 22px; }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .stats span {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #fff;
+    }
+    .warnings { padding: 14px 18px; border-color: #d29922; background: #fff8c5; }
+    .summary { overflow: hidden; }
+    .summary a {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+    .summary a:first-child { border-top: 0; }
+    .summary a:hover { background: #f6f8fa; }
+    .summary .numbers { margin-left: auto; }
+    .status {
+      display: inline-block;
+      min-width: 68px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      text-align: center;
+      color: #fff;
+      font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .status.modified { background: #8250df; }
+    .status.added { background: #1a7f37; }
+    .status.deleted { background: #cf222e; }
+    .status.unchanged { background: #57606a; }
+    .file { overflow: hidden; }
+    .file header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--code-bg);
+      table-layout: fixed;
+    }
+    td {
+      padding: 0;
+      vertical-align: top;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 20px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .ln {
+      width: 56px;
+      color: var(--muted);
+      text-align: right;
+      padding: 0 10px;
+      border-right: 1px solid var(--border);
+      user-select: none;
+    }
+    .code { padding-left: 10px; }
+    .marker { display: inline-block; width: 18px; color: var(--muted); }
+    tr.insert td { background: var(--add-bg); }
+    tr.insert .ln { background: var(--add-line); }
+    tr.delete td { background: var(--del-bg); }
+    tr.delete .ln { background: var(--del-line); }
+    tr.skip td { background: #f6f8fa; color: var(--muted); }
+    @media (max-width: 760px) {
+      main { padding: 14px; }
+      .file header, .summary a { align-items: flex-start; flex-direction: column; }
+      .summary .numbers { margin-left: 0; }
+      .ln { width: 42px; padding: 0 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Verilog Diff Report</h1>
+    <div class="meta">Generated at 2026-06-16 17:19:05. Patch file: E:\computerlab\final_acceptance\diff-report\diff.patch</div>
+    <section class="overview">
+      <h2>Comparisons</h2>
+      <ul><li><strong>single-cycle</strong>: CODExp\demo\sccpu_sim\source -> E:\computerlab\final_acceptance\sc_cpu</li>
+<li><strong>pipeline</strong>: CODExp\demo\plcpu_sim\source -> E:\computerlab\final_acceptance\pl_cpu</li></ul>
+      <div class="stats">
+        <span>14 changed files</span>
+        <span>+372 additions</span>
+        <span>-301 deletions</span>
+      </div>
+    </section>
+    
+    <nav class="summary">
+      <a href="#file-0"><span class="status modified">modified</span>single-cycle/NPC.v<span class="numbers">+3 -1</span></a>
+<a href="#file-1"><span class="status modified">modified</span>single-cycle/PC.v<span class="numbers">+0 -1</span></a>
+<a href="#file-2"><span class="status modified">modified</span>single-cycle/RF.v<span class="numbers">+0 -1</span></a>
+<a href="#file-3"><span class="status modified">modified</span>single-cycle/SCCPU.v<span class="numbers">+2 -2</span></a>
+<a href="#file-4"><span class="status modified">modified</span>single-cycle/alu.v<span class="numbers">+26 -15</span></a>
+<a href="#file-5"><span class="status modified">modified</span>single-cycle/ctrl.v<span class="numbers">+114 -91</span></a>
+<a href="#file-6"><span class="status modified">modified</span>single-cycle/dm.v<span class="numbers">+0 -1</span></a>
+<a href="#file-7"><span class="status deleted">deleted</span>single-cycle/sccomp_tb.v<span class="numbers">+0 -25</span></a>
+<a href="#file-8"><span class="status modified">modified</span>pipeline/EXT.v<span class="numbers">+4 -0</span></a>
+<a href="#file-9"><span class="status modified">modified</span>pipeline/NPC.v<span class="numbers">+7 -2</span></a>
+<a href="#file-10"><span class="status modified">modified</span>pipeline/PLCPU.v<span class="numbers">+61 -27</span></a>
+<a href="#file-11"><span class="status modified">modified</span>pipeline/alu.v<span class="numbers">+29 -20</span></a>
+<a href="#file-12"><span class="status modified">modified</span>pipeline/ctrl.v<span class="numbers">+126 -87</span></a>
+<a href="#file-13"><span class="status deleted">deleted</span>pipeline/plcomp_tb.v<span class="numbers">+0 -28</span></a>
+    </nav>
+    
+        <section class="file" id="file-0">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/NPC.v</strong>
+            </div>
+            <div class="numbers">+3 -1</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="context"><td class="ln">1</td><td class="ln">1</td><td class="code"><span class="marker"> </span>`include &quot;ctrl_encode_def.v&quot;</td></tr>
+<tr class="context"><td class="ln">2</td><td class="ln">2</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">3</td><td class="ln"></td><td class="code"><span class="marker">-</span>module NPC( PC, NPCOp, IMM, NPC );  // next pc module</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">3</td><td class="code"><span class="marker">+</span>module NPC( PC, NPCOp, IMM, RS1, NPC );  // next pc module</td></tr>
+<tr class="context"><td class="ln">4</td><td class="ln">4</td><td class="code"><span class="marker"> </span>   input  [31:0] PC;        // pc</td></tr>
+<tr class="context"><td class="ln">5</td><td class="ln">5</td><td class="code"><span class="marker"> </span>   input  [2:0]  NPCOp;     // next pc operation</td></tr>
+<tr class="context"><td class="ln">6</td><td class="ln">6</td><td class="code"><span class="marker"> </span>   input  [31:0] IMM;       // immediate</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">7</td><td class="code"><span class="marker">+</span>   input  [31:0] RS1;       // rs1 data for jalr</td></tr>
+<tr class="context"><td class="ln">7</td><td class="ln">8</td><td class="code"><span class="marker"> </span>   output reg [31:0] NPC;   // next pc</td></tr>
+<tr class="context"><td class="ln">8</td><td class="ln">9</td><td class="code"><span class="marker"> </span>   </td></tr>
+<tr class="context"><td class="ln">9</td><td class="ln">10</td><td class="code"><span class="marker"> </span>   wire [31:0] PCPLUS4;</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">14</td><td class="ln">15</td><td class="code"><span class="marker"> </span>          `NPC_PLUS4:  NPC = PCPLUS4;   // NPC computes addr</td></tr>
+<tr class="context"><td class="ln">15</td><td class="ln">16</td><td class="code"><span class="marker"> </span>          `NPC_BRANCH: NPC = PC+IMM;    //B type, NPC computes addr</td></tr>
+<tr class="context"><td class="ln">16</td><td class="ln">17</td><td class="code"><span class="marker"> </span>          `NPC_JUMP:   NPC = PC+IMM;    //J type, NPC computes addr</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">18</td><td class="code"><span class="marker">+</span>          `NPC_JALR:   NPC = (RS1 + IMM) &amp; 32&#x27;hffff_fffe;</td></tr>
+<tr class="context"><td class="ln">17</td><td class="ln">19</td><td class="code"><span class="marker"> </span>          default:     NPC = PCPLUS4;</td></tr>
+<tr class="context"><td class="ln">18</td><td class="ln">20</td><td class="code"><span class="marker"> </span>      endcase</td></tr>
+<tr class="context"><td class="ln">19</td><td class="ln">21</td><td class="code"><span class="marker"> </span>   end </td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-1">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/PC.v</strong>
+            </div>
+            <div class="numbers">+0 -1</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">9</td><td class="ln">9</td><td class="code"><span class="marker"> </span>        PC &lt;= 32&#x27;h0000_0000;</td></tr>
+<tr class="context"><td class="ln">10</td><td class="ln">10</td><td class="code"><span class="marker"> </span>     else </td></tr>
+<tr class="context"><td class="ln">11</td><td class="ln">11</td><td class="code"><span class="marker"> </span>        PC &lt;= NPC;</td></tr>
+<tr class="delete"><td class="ln">12</td><td class="ln"></td><td class="code"><span class="marker">-</span>        $write(&quot;\n pc = %h: &quot;, PC);</td></tr>
+<tr class="context"><td class="ln">13</td><td class="ln">12</td><td class="code"><span class="marker"> </span>   end </td></tr>
+<tr class="context"><td class="ln">14</td><td class="ln">13</td><td class="code"><span class="marker"> </span> endmodule</td></tr>
+<tr class="context"><td class="ln">15</td><td class="ln">14</td><td class="code"><span class="marker"> </span></td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-2">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/RF.v</strong>
+            </div>
+            <div class="numbers">+0 -1</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">21</td><td class="ln">21</td><td class="code"><span class="marker"> </span>        if (RFWr) begin</td></tr>
+<tr class="context"><td class="ln">22</td><td class="ln">22</td><td class="code"><span class="marker"> </span>          if(A3 != 5&#x27;b0) begin</td></tr>
+<tr class="context"><td class="ln">23</td><td class="ln">23</td><td class="code"><span class="marker"> </span>              rf[A3] &lt;= WD;</td></tr>
+<tr class="delete"><td class="ln">24</td><td class="ln"></td><td class="code"><span class="marker">-</span>              $write(&quot;x%d = %h  &quot;, A3, WD);</td></tr>
+<tr class="context"><td class="ln">25</td><td class="ln">24</td><td class="code"><span class="marker"> </span>          end</td></tr>
+<tr class="context"><td class="ln">26</td><td class="ln">25</td><td class="code"><span class="marker"> </span>        end</td></tr>
+<tr class="context"><td class="ln">27</td><td class="ln">26</td><td class="code"><span class="marker"> </span>      end</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-3">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/SCCPU.v</strong>
+            </div>
+            <div class="numbers">+2 -2</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">71</td><td class="ln">71</td><td class="code"><span class="marker"> </span>	);</td></tr>
+<tr class="context"><td class="ln">72</td><td class="ln">72</td><td class="code"><span class="marker"> </span> // instantiation of pc unit</td></tr>
+<tr class="context"><td class="ln">73</td><td class="ln">73</td><td class="code"><span class="marker"> </span>	PC  U_PC(.clk(clk), .rst(reset), .NPC(NPC), .PC(PC_out) );</td></tr>
+<tr class="delete"><td class="ln">74</td><td class="ln"></td><td class="code"><span class="marker">-</span>	NPC U_NPC(.PC(PC_out), .NPCOp(NPCOp), .IMM(immout), .NPC(NPC));</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">74</td><td class="code"><span class="marker">+</span>	NPC U_NPC(.PC(PC_out), .NPCOp(NPCOp), .IMM(immout), .RS1(RD1), .NPC(NPC));</td></tr>
+<tr class="context"><td class="ln">75</td><td class="ln">75</td><td class="code"><span class="marker"> </span>	EXT U_EXT(</td></tr>
+<tr class="context"><td class="ln">76</td><td class="ln">76</td><td class="code"><span class="marker"> </span>		.iimm(iimm), .simm(simm), .bimm(bimm), .uimm(uimm), .jimm(jimm),</td></tr>
+<tr class="context"><td class="ln">77</td><td class="ln">77</td><td class="code"><span class="marker"> </span>		.EXTOp(EXTOp), .immout(immout)</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">99</td><td class="ln">99</td><td class="code"><span class="marker"> </span>	endcase</td></tr>
+<tr class="context"><td class="ln">100</td><td class="ln">100</td><td class="code"><span class="marker"> </span>end</td></tr>
+<tr class="context"><td class="ln">101</td><td class="ln">101</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">102</td><td class="ln"></td><td class="code"><span class="marker">-</span>endmodule</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">102</td><td class="code"><span class="marker">+</span>endmodule</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-4">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/alu.v</strong>
+            </div>
+            <div class="numbers">+26 -15</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">9</td><td class="ln">9</td><td class="code"><span class="marker"> </span>   reg [31:0] C;</td></tr>
+<tr class="context"><td class="ln">10</td><td class="ln">10</td><td class="code"><span class="marker"> </span>   integer    i;</td></tr>
+<tr class="context"><td class="ln">11</td><td class="ln">11</td><td class="code"><span class="marker"> </span>       </td></tr>
+<tr class="delete"><td class="ln">12</td><td class="ln"></td><td class="code"><span class="marker">-</span>   always @( * ) begin</td></tr>
+<tr class="delete"><td class="ln">13</td><td class="ln"></td><td class="code"><span class="marker">-</span>      case ( ALUOp )</td></tr>
+<tr class="delete"><td class="ln">14</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_lui:C=B;</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_add:C=A+B;</td></tr>
+<tr class="delete"><td class="ln">16</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_sub:C=A-B;  //and beq</td></tr>
+<tr class="delete"><td class="ln">17</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_xor:C=A^B;</td></tr>
+<tr class="delete"><td class="ln">18</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_or:C=A|B;</td></tr>
+<tr class="delete"><td class="ln">19</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_and:C=A&amp;B;</td></tr>
+<tr class="delete"><td class="ln">20</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_sll:C=A&lt;&lt;B;</td></tr>
+<tr class="delete"><td class="ln">21</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_srl:C=A&gt;&gt;B;</td></tr>
+<tr class="delete"><td class="ln">22</td><td class="ln"></td><td class="code"><span class="marker">-</span>      `ALUOp_sra:C=A&gt;&gt;&gt;B;</td></tr>
+<tr class="delete"><td class="ln">23</td><td class="ln"></td><td class="code"><span class="marker">-</span>      default: C=A;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">12</td><td class="code"><span class="marker">+</span>   always @(*) begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">13</td><td class="code"><span class="marker">+</span>      case (ALUOp)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">14</td><td class="code"><span class="marker">+</span>      `ALUOp_lui:  C = B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">15</td><td class="code"><span class="marker">+</span>      `ALUOp_add:  C = A + B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">16</td><td class="code"><span class="marker">+</span>      `ALUOp_sub:  C = A - B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">17</td><td class="code"><span class="marker">+</span>      `ALUOp_bne:  C = (A != B);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">18</td><td class="code"><span class="marker">+</span>      `ALUOp_blt:  C = (A &lt; B);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">19</td><td class="code"><span class="marker">+</span>      `ALUOp_bge:  C = (A &gt;= B);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">20</td><td class="code"><span class="marker">+</span>      `ALUOp_bltu: C = ($unsigned(A) &lt; $unsigned(B));</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">21</td><td class="code"><span class="marker">+</span>      `ALUOp_bgeu: C = ($unsigned(A) &gt;= $unsigned(B));</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">22</td><td class="code"><span class="marker">+</span>      `ALUOp_slt:  C = (A &lt; B) ? 32&#x27;d1 : 32&#x27;d0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">23</td><td class="code"><span class="marker">+</span>      `ALUOp_sltu: C = ($unsigned(A) &lt; $unsigned(B)) ? 32&#x27;d1 : 32&#x27;d0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">24</td><td class="code"><span class="marker">+</span>      `ALUOp_xor:  C = A ^ B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">25</td><td class="code"><span class="marker">+</span>      `ALUOp_or:   C = A | B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">26</td><td class="code"><span class="marker">+</span>      `ALUOp_and:  C = A &amp; B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">27</td><td class="code"><span class="marker">+</span>      `ALUOp_sll:  C = A &lt;&lt; B[4:0];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">28</td><td class="code"><span class="marker">+</span>      `ALUOp_srl:  C = $unsigned(A) &gt;&gt; B[4:0];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">29</td><td class="code"><span class="marker">+</span>      `ALUOp_sra:  C = A &gt;&gt;&gt; B[4:0];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">30</td><td class="code"><span class="marker">+</span>      default:     C = A;</td></tr>
+<tr class="context"><td class="ln">24</td><td class="ln">31</td><td class="code"><span class="marker"> </span>      endcase</td></tr>
+<tr class="delete"><td class="ln">25</td><td class="ln"></td><td class="code"><span class="marker">-</span>   end // end always</td></tr>
+<tr class="delete"><td class="ln">26</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">27</td><td class="ln"></td><td class="code"><span class="marker">-</span>   assign Zero = (C == 32&#x27;b0);  </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">32</td><td class="code"><span class="marker">+</span>   end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">33</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">34</td><td class="code"><span class="marker">+</span>   assign Zero = (ALUOp == `ALUOp_bne ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">35</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_blt ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">36</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_bge ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">37</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_bltu ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">38</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_bgeu) ? (C != 32&#x27;b0) : (C == 32&#x27;b0);</td></tr>
+<tr class="context"><td class="ln">28</td><td class="ln">39</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">29</td><td class="ln">40</td><td class="code"><span class="marker"> </span>endmodule</td></tr>
+<tr class="context"><td class="ln">30</td><td class="ln">41</td><td class="code"><span class="marker"> </span>    </td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-5">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/ctrl.v</strong>
+            </div>
+            <div class="numbers">+114 -91</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="delete"><td class="ln">1</td><td class="ln"></td><td class="code"><span class="marker">-</span> `include &quot;ctrl_encode_def.v&quot;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">1</td><td class="code"><span class="marker">+</span>`include &quot;ctrl_encode_def.v&quot;</td></tr>
+<tr class="context"><td class="ln">2</td><td class="ln">2</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">3</td><td class="ln"></td><td class="code"><span class="marker">-</span>module ctrl(Op, Funct7, Funct3, Zero, </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">3</td><td class="code"><span class="marker">+</span>module ctrl(Op, Funct7, Funct3, Zero,</td></tr>
+<tr class="context"><td class="ln">4</td><td class="ln">4</td><td class="code"><span class="marker"> </span>            RegWrite, MemWrite,</td></tr>
+<tr class="delete"><td class="ln">5</td><td class="ln"></td><td class="code"><span class="marker">-</span>            EXTOp, ALUOp, NPCOp, </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">5</td><td class="code"><span class="marker">+</span>            EXTOp, ALUOp, NPCOp,</td></tr>
+<tr class="context"><td class="ln">6</td><td class="ln">6</td><td class="code"><span class="marker"> </span>            ALUSrc, WDSel</td></tr>
+<tr class="context"><td class="ln">7</td><td class="ln">7</td><td class="code"><span class="marker"> </span>            );</td></tr>
+<tr class="delete"><td class="ln">8</td><td class="ln"></td><td class="code"><span class="marker">-</span>            </td></tr>
+<tr class="delete"><td class="ln">9</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [6:0] Op;       // opcode</td></tr>
+<tr class="delete"><td class="ln">10</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [6:0] Funct7;    // funct7</td></tr>
+<tr class="delete"><td class="ln">11</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [2:0] Funct3;    // funct3</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">8</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">9</td><td class="code"><span class="marker">+</span>   input  [6:0] Op;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">10</td><td class="code"><span class="marker">+</span>   input  [6:0] Funct7;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">11</td><td class="code"><span class="marker">+</span>   input  [2:0] Funct3;</td></tr>
+<tr class="context"><td class="ln">12</td><td class="ln">12</td><td class="code"><span class="marker"> </span>   input        Zero;</td></tr>
+<tr class="delete"><td class="ln">13</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">14</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       RegWrite; // control signal for register write</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       MemWrite; // control signal for memory write</td></tr>
+<tr class="delete"><td class="ln">16</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [5:0] EXTOp;    // control signal to signed extension</td></tr>
+<tr class="delete"><td class="ln">17</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [4:0] ALUOp;    // ALU opertion</td></tr>
+<tr class="delete"><td class="ln">18</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [2:0] NPCOp;    // next pc operation</td></tr>
+<tr class="delete"><td class="ln">19</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       ALUSrc;   // ALU source for B </td></tr>
+<tr class="delete"><td class="ln">20</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [1:0] WDSel;    // (register) write data selection</td></tr>
+<tr class="delete"><td class="ln">21</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">22</td><td class="ln"></td><td class="code"><span class="marker">-</span>   //Op[6]&amp;Op[5]&amp;Op[4]&amp;Op[3]&amp;Op[2]&amp;Op[1]&amp;Op[0];</td></tr>
+<tr class="delete"><td class="ln">23</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">24</td><td class="ln"></td><td class="code"><span class="marker">-</span>   //LUI</td></tr>
+<tr class="delete"><td class="ln">25</td><td class="ln"></td><td class="code"><span class="marker">-</span>   wire LUI = ~Op[6]&amp;Op[5]&amp;Op[4]&amp;~Op[3]&amp;Op[2]&amp;Op[1]&amp;Op[0];</td></tr>
+<tr class="delete"><td class="ln">26</td><td class="ln"></td><td class="code"><span class="marker">-</span>      </td></tr>
+<tr class="delete"><td class="ln">27</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // r format 0110011</td></tr>
+<tr class="delete"><td class="ln">28</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire rtype  = ~Op[6]&amp;Op[5]&amp;Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0110011</td></tr>
+<tr class="delete"><td class="ln">29</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_add  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp;~Funct3[2]&amp;~Funct3[1]&amp;~Funct3[0]; // add 0000000 000</td></tr>
+<tr class="delete"><td class="ln">30</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sub  = rtype&amp; ~Funct7[6]&amp; Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp;~Funct3[2]&amp;~Funct3[1]&amp;~Funct3[0]; // sub 0100000 000</td></tr>
+<tr class="delete"><td class="ln">31</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_or   = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp; Funct3[1]&amp;~Funct3[0]; // or 0000000 110</td></tr>
+<tr class="delete"><td class="ln">32</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_and  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp; Funct3[1]&amp; Funct3[0]; // and 0000000 111</td></tr>
+<tr class="delete"><td class="ln">33</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_xor  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp;~Funct3[1]&amp;~Funct3[0]; // xor 0000000 100</td></tr>
+<tr class="delete"><td class="ln">34</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sll  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp;~Funct3[2]&amp;~Funct3[1]&amp; Funct3[0]; // sll 0000000 001</td></tr>
+<tr class="delete"><td class="ln">35</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_srl  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp;~Funct3[1]&amp; Funct3[0]; // srl 0000000 101</td></tr>
+<tr class="delete"><td class="ln">36</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sra  = rtype&amp; ~Funct7[6]&amp; Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp;~Funct3[1]&amp; Funct3[0]; // sra 0100000 101</td></tr>
+<tr class="context"><td class="ln">37</td><td class="ln">13</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">38</td><td class="ln"></td><td class="code"><span class="marker">-</span> // i format load 0000011</td></tr>
+<tr class="delete"><td class="ln">39</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire itype_l  = ~Op[6]&amp;~Op[5]&amp;~Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0000011</td></tr>
+<tr class="delete"><td class="ln">40</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_lw = itype_l&amp;~Funct3[2]&amp; Funct3[1]&amp;~Funct3[0];//lw 010</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">14</td><td class="code"><span class="marker">+</span>   output reg       RegWrite;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">15</td><td class="code"><span class="marker">+</span>   output reg       MemWrite;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">16</td><td class="code"><span class="marker">+</span>   output reg [5:0] EXTOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">17</td><td class="code"><span class="marker">+</span>   output reg [4:0] ALUOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">18</td><td class="code"><span class="marker">+</span>   output reg [2:0] NPCOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">19</td><td class="code"><span class="marker">+</span>   output reg       ALUSrc;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">20</td><td class="code"><span class="marker">+</span>   output reg [1:0] WDSel;</td></tr>
+<tr class="context"><td class="ln">41</td><td class="ln">21</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">42</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // i format 0010011</td></tr>
+<tr class="delete"><td class="ln">43</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire itype_r  = ~Op[6]&amp;~Op[5]&amp;Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0010011</td></tr>
+<tr class="delete"><td class="ln">44</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_addi  =  itype_r&amp; ~Funct3[2]&amp; ~Funct3[1]&amp; ~Funct3[0]; // addi 000</td></tr>
+<tr class="delete"><td class="ln">45</td><td class="ln"></td><td class="code"><span class="marker">-</span>    	</td></tr>
+<tr class="delete"><td class="ln">46</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // s format 0100011</td></tr>
+<tr class="delete"><td class="ln">47</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire stype  = ~Op[6]&amp;Op[5]&amp;~Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0100011</td></tr>
+<tr class="delete"><td class="ln">48</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sw   =  stype&amp; ~Funct3[2]&amp; Funct3[1]&amp;~Funct3[0]; // sw 010</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">22</td><td class="code"><span class="marker">+</span>   always @(*) begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">23</td><td class="code"><span class="marker">+</span>      RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">24</td><td class="code"><span class="marker">+</span>      MemWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">25</td><td class="code"><span class="marker">+</span>      EXTOp    = 6&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">26</td><td class="code"><span class="marker">+</span>      ALUOp    = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">27</td><td class="code"><span class="marker">+</span>      NPCOp    = `NPC_PLUS4;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">28</td><td class="code"><span class="marker">+</span>      ALUSrc   = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">29</td><td class="code"><span class="marker">+</span>      WDSel    = `WDSel_FromALU;</td></tr>
+<tr class="context"><td class="ln">49</td><td class="ln">30</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">50</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // sb format 1100011</td></tr>
+<tr class="delete"><td class="ln">51</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire sbtype  = Op[6]&amp;Op[5]&amp;~Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0];//1100011</td></tr>
+<tr class="delete"><td class="ln">52</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_beq  = sbtype&amp; ~Funct3[2]&amp; ~Funct3[1]&amp;~Funct3[0]; // beq 000</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">31</td><td class="code"><span class="marker">+</span>      case (Op)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">32</td><td class="code"><span class="marker">+</span>      7&#x27;b0110111: begin // lui</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">33</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">34</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">35</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_UTYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">36</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_lui;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">37</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">53</td><td class="ln">38</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">54</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // j format</td></tr>
+<tr class="delete"><td class="ln">55</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_jal  = Op[6]&amp; Op[5]&amp;~Op[4]&amp; Op[3]&amp; Op[2]&amp; Op[1]&amp; Op[0];  // jal 1101111</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">39</td><td class="code"><span class="marker">+</span>      7&#x27;b0110011: begin // R-type</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">40</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">41</td><td class="code"><span class="marker">+</span>         case ({Funct7, Funct3})</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">42</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b000}: ALUOp = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">43</td><td class="code"><span class="marker">+</span>         {7&#x27;b0100000, 3&#x27;b000}: ALUOp = `ALUOp_sub;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">44</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b010}: ALUOp = `ALUOp_slt;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">45</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b011}: ALUOp = `ALUOp_sltu;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">46</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b100}: ALUOp = `ALUOp_xor;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">47</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b110}: ALUOp = `ALUOp_or;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">48</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b111}: ALUOp = `ALUOp_and;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">49</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b001}: ALUOp = `ALUOp_sll;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">50</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b101}: ALUOp = `ALUOp_srl;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">51</td><td class="code"><span class="marker">+</span>         {7&#x27;b0100000, 3&#x27;b101}: ALUOp = `ALUOp_sra;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">52</td><td class="code"><span class="marker">+</span>         default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">53</td><td class="code"><span class="marker">+</span>            RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">54</td><td class="code"><span class="marker">+</span>            ALUOp = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">55</td><td class="code"><span class="marker">+</span>         end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">56</td><td class="code"><span class="marker">+</span>         endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">57</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">56</td><td class="ln">58</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">57</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // generate control signals</td></tr>
+<tr class="delete"><td class="ln">58</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign RegWrite   = rtype | itype_r | LUI | itype_l; // register write</td></tr>
+<tr class="delete"><td class="ln">59</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign MemWrite   = stype;                           // memory write</td></tr>
+<tr class="delete"><td class="ln">60</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign ALUSrc     = itype_r | LUI | itype_l | stype;   // ALU B is from instruction immediate</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">59</td><td class="code"><span class="marker">+</span>      7&#x27;b0010011: begin // I-type arithmetic</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">60</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">61</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">62</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_ITYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">63</td><td class="code"><span class="marker">+</span>         case (Funct3)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">64</td><td class="code"><span class="marker">+</span>         3&#x27;b000: ALUOp = `ALUOp_add;  // addi</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">65</td><td class="code"><span class="marker">+</span>         3&#x27;b010: ALUOp = `ALUOp_slt;  // slti</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">66</td><td class="code"><span class="marker">+</span>         3&#x27;b011: ALUOp = `ALUOp_sltu; // sltiu</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">67</td><td class="code"><span class="marker">+</span>         3&#x27;b100: ALUOp = `ALUOp_xor;  // xori</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">68</td><td class="code"><span class="marker">+</span>         3&#x27;b110: ALUOp = `ALUOp_or;   // ori</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">69</td><td class="code"><span class="marker">+</span>         3&#x27;b111: ALUOp = `ALUOp_and;  // andi</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">70</td><td class="code"><span class="marker">+</span>         3&#x27;b001: ALUOp = (Funct7 == 7&#x27;b0000000) ? `ALUOp_sll : `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">71</td><td class="code"><span class="marker">+</span>         3&#x27;b101: ALUOp = (Funct7 == 7&#x27;b0100000) ? `ALUOp_sra : `ALUOp_srl;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">72</td><td class="code"><span class="marker">+</span>         default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">73</td><td class="code"><span class="marker">+</span>            RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">74</td><td class="code"><span class="marker">+</span>            ALUOp = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">75</td><td class="code"><span class="marker">+</span>         end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">76</td><td class="code"><span class="marker">+</span>         endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">77</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">61</td><td class="ln">78</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">62</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // signed extension</td></tr>
+<tr class="delete"><td class="ln">63</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_ITYPE_SHAMT 6&#x27;b100000</td></tr>
+<tr class="delete"><td class="ln">64</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_ITYPE	      6&#x27;b010000</td></tr>
+<tr class="delete"><td class="ln">65</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_STYPE	      6&#x27;b001000</td></tr>
+<tr class="delete"><td class="ln">66</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_BTYPE	      6&#x27;b000100</td></tr>
+<tr class="delete"><td class="ln">67</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_UTYPE	      6&#x27;b000010</td></tr>
+<tr class="delete"><td class="ln">68</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_JTYPE	      6&#x27;b000001</td></tr>
+<tr class="delete"><td class="ln">69</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[5]    = 0;</td></tr>
+<tr class="delete"><td class="ln">70</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[4]    = i_addi | itype_l;</td></tr>
+<tr class="delete"><td class="ln">71</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[3]    = stype; </td></tr>
+<tr class="delete"><td class="ln">72</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[2]    = sbtype; </td></tr>
+<tr class="delete"><td class="ln">73</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[1]    = LUI;</td></tr>
+<tr class="delete"><td class="ln">74</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[0]    = i_jal;         </td></tr>
+<tr class="delete"><td class="ln">75</td><td class="ln"></td><td class="code"><span class="marker">-</span>  </td></tr>
+<tr class="delete"><td class="ln">76</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // WDSel_FromALU 2&#x27;b00</td></tr>
+<tr class="delete"><td class="ln">77</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // WDSel_FromMEM 2&#x27;b01</td></tr>
+<tr class="delete"><td class="ln">78</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // WDSel_FromPC  2&#x27;b10 </td></tr>
+<tr class="delete"><td class="ln">79</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign WDSel[1] = i_jal;</td></tr>
+<tr class="delete"><td class="ln">80</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign WDSel[0] = itype_l;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">79</td><td class="code"><span class="marker">+</span>      7&#x27;b0000011: begin // lw</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">80</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">81</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">82</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_ITYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">83</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">84</td><td class="code"><span class="marker">+</span>         WDSel    = `WDSel_FromMEM;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">85</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">81</td><td class="ln">86</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">82</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // NPC_PLUS4   3&#x27;b000</td></tr>
+<tr class="delete"><td class="ln">83</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // NPC_BRANCH  3&#x27;b001</td></tr>
+<tr class="delete"><td class="ln">84</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // NPC_JUMP    3&#x27;b010</td></tr>
+<tr class="delete"><td class="ln">85</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // NPC_JALR	   3&#x27;b100</td></tr>
+<tr class="delete"><td class="ln">86</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign NPCOp[2] = 0;</td></tr>
+<tr class="delete"><td class="ln">87</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign NPCOp[1] = i_jal;</td></tr>
+<tr class="delete"><td class="ln">88</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign NPCOp[0] = sbtype &amp; Zero;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">87</td><td class="code"><span class="marker">+</span>      7&#x27;b0100011: begin // sw</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">88</td><td class="code"><span class="marker">+</span>         MemWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">89</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">90</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_STYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">91</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">92</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">89</td><td class="ln">93</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">90</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_nop 5&#x27;b00000</td></tr>
+<tr class="delete"><td class="ln">91</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_lui 5&#x27;b00001</td></tr>
+<tr class="delete"><td class="ln">92</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_add 5&#x27;b00011</td></tr>
+<tr class="delete"><td class="ln">93</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_sub 5&#x27;b00100</td></tr>
+<tr class="delete"><td class="ln">94</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_xor 5&#x27;b01100</td></tr>
+<tr class="delete"><td class="ln">95</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_or 5&#x27;b01101</td></tr>
+<tr class="delete"><td class="ln">96</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_and 5&#x27;b01110</td></tr>
+<tr class="delete"><td class="ln">97</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_sll 5&#x27;b01111</td></tr>
+<tr class="delete"><td class="ln">98</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_srl 5&#x27;b10000</td></tr>
+<tr class="delete"><td class="ln">99</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_sra 5&#x27;b10001</td></tr>
+<tr class="delete"><td class="ln">100</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[4] = i_srl | i_sra;</td></tr>
+<tr class="delete"><td class="ln">101</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[3] = i_and | i_or | i_sll | i_xor;</td></tr>
+<tr class="delete"><td class="ln">102</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[2] = i_and | i_or | i_sub | i_beq | i_sll | i_xor;</td></tr>
+<tr class="delete"><td class="ln">103</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[1] = i_addi | i_add | i_and | i_sll | itype_l | stype ;</td></tr>
+<tr class="delete"><td class="ln">104</td><td class="ln"></td><td class="code"><span class="marker">-</span>	  assign ALUOp[0] = i_addi | i_add | i_or | LUI | i_sll | i_sra | itype_l | stype ;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">94</td><td class="code"><span class="marker">+</span>      7&#x27;b1100011: begin // branches</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">95</td><td class="code"><span class="marker">+</span>         EXTOp = `EXT_CTRL_BTYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">96</td><td class="code"><span class="marker">+</span>         case (Funct3)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">97</td><td class="code"><span class="marker">+</span>         3&#x27;b000: begin ALUOp = `ALUOp_sub;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // beq</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">98</td><td class="code"><span class="marker">+</span>         3&#x27;b001: begin ALUOp = `ALUOp_bne;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bne</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">99</td><td class="code"><span class="marker">+</span>         3&#x27;b100: begin ALUOp = `ALUOp_blt;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // blt</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">100</td><td class="code"><span class="marker">+</span>         3&#x27;b101: begin ALUOp = `ALUOp_bge;  NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bge</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">101</td><td class="code"><span class="marker">+</span>         3&#x27;b110: begin ALUOp = `ALUOp_bltu; NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bltu</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">102</td><td class="code"><span class="marker">+</span>         3&#x27;b111: begin ALUOp = `ALUOp_bgeu; NPCOp = Zero ? `NPC_BRANCH : `NPC_PLUS4; end // bgeu</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">103</td><td class="code"><span class="marker">+</span>         default: begin ALUOp = `ALUOp_nop; NPCOp = `NPC_PLUS4; end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">104</td><td class="code"><span class="marker">+</span>         endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">105</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">105</td><td class="ln">106</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">107</td><td class="code"><span class="marker">+</span>      7&#x27;b1101111: begin // jal</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">108</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">109</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_JTYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">110</td><td class="code"><span class="marker">+</span>         NPCOp    = `NPC_JUMP;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">111</td><td class="code"><span class="marker">+</span>         WDSel    = `WDSel_FromPC;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">112</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">113</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">114</td><td class="code"><span class="marker">+</span>      7&#x27;b1100111: begin // jalr</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">115</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">116</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">117</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_ITYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">118</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">119</td><td class="code"><span class="marker">+</span>         NPCOp    = `NPC_JALR;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">120</td><td class="code"><span class="marker">+</span>         WDSel    = `WDSel_FromPC;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">121</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">122</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">123</td><td class="code"><span class="marker">+</span>      default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">124</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">125</td><td class="code"><span class="marker">+</span>         MemWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">126</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">127</td><td class="code"><span class="marker">+</span>      endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">128</td><td class="code"><span class="marker">+</span>   end</td></tr>
+<tr class="context"><td class="ln">106</td><td class="ln">129</td><td class="code"><span class="marker"> </span>endmodule</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-6">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>single-cycle/dm.v</strong>
+            </div>
+            <div class="numbers">+0 -1</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">12</td><td class="ln">12</td><td class="code"><span class="marker"> </span>   always @(posedge clk)</td></tr>
+<tr class="context"><td class="ln">13</td><td class="ln">13</td><td class="code"><span class="marker"> </span>      if (DMWr) begin</td></tr>
+<tr class="context"><td class="ln">14</td><td class="ln">14</td><td class="code"><span class="marker"> </span>         dmem[addr[8:2]] &lt;= din;</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>         $write(&quot; memaddr = %h, memdata = %h&quot;, addr[31:0], din);</td></tr>
+<tr class="context"><td class="ln">16</td><td class="ln">15</td><td class="code"><span class="marker"> </span>      end</td></tr>
+<tr class="context"><td class="ln">17</td><td class="ln">16</td><td class="code"><span class="marker"> </span>   </td></tr>
+<tr class="context"><td class="ln">18</td><td class="ln">17</td><td class="code"><span class="marker"> </span>     //load</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-7">
+          <header>
+            <div>
+              <span class="status deleted">deleted</span>
+              <strong>single-cycle/sccomp_tb.v</strong>
+            </div>
+            <div class="numbers">+0 -25</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="delete"><td class="ln">1</td><td class="ln"></td><td class="code"><span class="marker">-</span>`timescale 1ns/1ns </td></tr>
+<tr class="delete"><td class="ln">2</td><td class="ln"></td><td class="code"><span class="marker">-</span>module sccomp_tb();</td></tr>
+<tr class="delete"><td class="ln">3</td><td class="ln"></td><td class="code"><span class="marker">-</span>   reg    clk, rstn;</td></tr>
+<tr class="delete"><td class="ln">4</td><td class="ln"></td><td class="code"><span class="marker">-</span>   reg  [4:0] reg_sel;</td></tr>
+<tr class="delete"><td class="ln">5</td><td class="ln"></td><td class="code"><span class="marker">-</span>   wire [31:0] reg_data;</td></tr>
+<tr class="delete"><td class="ln">6</td><td class="ln"></td><td class="code"><span class="marker">-</span></td></tr>
+<tr class="delete"><td class="ln">7</td><td class="ln"></td><td class="code"><span class="marker">-</span>   // instantiation of sccomp</td></tr>
+<tr class="delete"><td class="ln">8</td><td class="ln"></td><td class="code"><span class="marker">-</span>   sccomp sccomp(.clk(clk), .rstn(rstn), .reg_sel(reg_sel), .reg_data(reg_data));</td></tr>
+<tr class="delete"><td class="ln">9</td><td class="ln"></td><td class="code"><span class="marker">-</span></td></tr>
+<tr class="delete"><td class="ln">10</td><td class="ln"></td><td class="code"><span class="marker">-</span>   initial begin</td></tr>
+<tr class="delete"><td class="ln">11</td><td class="ln"></td><td class="code"><span class="marker">-</span>     // input instructions for simulation, rv32_sc_sim</td></tr>
+<tr class="delete"><td class="ln">12</td><td class="ln"></td><td class="code"><span class="marker">-</span>      $readmemh(&quot;rv32_sc_sim.dat&quot;, sccomp.U_imem.RAM);</td></tr>
+<tr class="delete"><td class="ln">13</td><td class="ln"></td><td class="code"><span class="marker">-</span></td></tr>
+<tr class="delete"><td class="ln">14</td><td class="ln"></td><td class="code"><span class="marker">-</span>      clk = 1;</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>      rstn = 1;</td></tr>
+<tr class="delete"><td class="ln">16</td><td class="ln"></td><td class="code"><span class="marker">-</span>      #10 ;</td></tr>
+<tr class="delete"><td class="ln">17</td><td class="ln"></td><td class="code"><span class="marker">-</span>      rstn = 0;</td></tr>
+<tr class="delete"><td class="ln">18</td><td class="ln"></td><td class="code"><span class="marker">-</span>      reg_sel = 7;</td></tr>
+<tr class="delete"><td class="ln">19</td><td class="ln"></td><td class="code"><span class="marker">-</span>   end</td></tr>
+<tr class="delete"><td class="ln">20</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">21</td><td class="ln"></td><td class="code"><span class="marker">-</span>   always begin</td></tr>
+<tr class="delete"><td class="ln">22</td><td class="ln"></td><td class="code"><span class="marker">-</span>      #(5) clk = ~clk;</td></tr>
+<tr class="delete"><td class="ln">23</td><td class="ln"></td><td class="code"><span class="marker">-</span>   end</td></tr>
+<tr class="delete"><td class="ln">24</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">25</td><td class="ln"></td><td class="code"><span class="marker">-</span>endmodule</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-8">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>pipeline/EXT.v</strong>
+            </div>
+            <div class="numbers">+4 -0</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">2</td><td class="ln">2</td><td class="code"><span class="marker"> </span>module EXT( </td></tr>
+<tr class="context"><td class="ln">3</td><td class="ln">3</td><td class="code"><span class="marker"> </span>    input	[11:0]			iimm, //instr[31:20], 12 bits</td></tr>
+<tr class="context"><td class="ln">4</td><td class="ln">4</td><td class="code"><span class="marker"> </span>	input	[11:0]			simm, //instr[31:25, 11:7], 12 bits</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">5</td><td class="code"><span class="marker">+</span>	input	[11:0]			bimm, //instr[31], instr[7], instr[30:25], instr[11:8]</td></tr>
+<tr class="context"><td class="ln">5</td><td class="ln">6</td><td class="code"><span class="marker"> </span>	input	[19:0]			uimm, // U type</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">7</td><td class="code"><span class="marker">+</span>	input   [19:0]          jimm, // J type</td></tr>
+<tr class="context"><td class="ln">6</td><td class="ln">8</td><td class="code"><span class="marker"> </span>	input	[5:0]			EXTOp,</td></tr>
+<tr class="context"><td class="ln">7</td><td class="ln">9</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">8</td><td class="ln">10</td><td class="code"><span class="marker"> </span>	output	reg [31:0] 	    immout</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">12</td><td class="ln">14</td><td class="code"><span class="marker"> </span>	 case (EXTOp)</td></tr>
+<tr class="context"><td class="ln">13</td><td class="ln">15</td><td class="code"><span class="marker"> </span>		`EXT_CTRL_ITYPE:	immout &lt;= {{20{iimm[11]}}, iimm[11:0]};</td></tr>
+<tr class="context"><td class="ln">14</td><td class="ln">16</td><td class="code"><span class="marker"> </span>		`EXT_CTRL_STYPE:	immout &lt;= {{20{simm[11]}}, simm[11:0]};</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">17</td><td class="code"><span class="marker">+</span>		`EXT_CTRL_BTYPE:    immout &lt;= {{19{bimm[11]}}, bimm[11:0], 1&#x27;b0};</td></tr>
+<tr class="context"><td class="ln">15</td><td class="ln">18</td><td class="code"><span class="marker"> </span>		`EXT_CTRL_UTYPE:	immout &lt;= {uimm[19:0], 12&#x27;b0};     //???????????12??0</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">19</td><td class="code"><span class="marker">+</span>		`EXT_CTRL_JTYPE:    immout &lt;= {{11{jimm[19]}}, jimm[19:0], 1&#x27;b0};</td></tr>
+<tr class="context"><td class="ln">16</td><td class="ln">20</td><td class="code"><span class="marker"> </span>		default:	        immout &lt;= 32&#x27;b0;</td></tr>
+<tr class="context"><td class="ln">17</td><td class="ln">21</td><td class="code"><span class="marker"> </span>	 endcase</td></tr>
+<tr class="context"><td class="ln">18</td><td class="ln">22</td><td class="code"><span class="marker"> </span>       </td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-9">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>pipeline/NPC.v</strong>
+            </div>
+            <div class="numbers">+7 -2</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="context"><td class="ln">1</td><td class="ln">1</td><td class="code"><span class="marker"> </span>`include &quot;ctrl_encode_def.v&quot;</td></tr>
+<tr class="context"><td class="ln">2</td><td class="ln">2</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">3</td><td class="ln"></td><td class="code"><span class="marker">-</span>module NPC(PC, NPCOp, IMM, NPC);  // next pc module</td></tr>
+<tr class="delete"><td class="ln">4</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [31:0] PC;        // pc</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">3</td><td class="code"><span class="marker">+</span>module NPC(PC, JumpPC, NPCOp, IMM, RS1, NPC);  // next pc module</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">4</td><td class="code"><span class="marker">+</span>   input  [31:0] PC;        // current fetch pc</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">5</td><td class="code"><span class="marker">+</span>   input  [31:0] JumpPC;    // pc of the control-flow instruction in EX</td></tr>
+<tr class="context"><td class="ln">5</td><td class="ln">6</td><td class="code"><span class="marker"> </span>   input  [4:0]  NPCOp;     // next pc operation</td></tr>
+<tr class="context"><td class="ln">6</td><td class="ln">7</td><td class="code"><span class="marker"> </span>   input  [31:0] IMM;       // immediate</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">8</td><td class="code"><span class="marker">+</span>   input  [31:0] RS1;       // rs1 data for jalr</td></tr>
+<tr class="context"><td class="ln">7</td><td class="ln">9</td><td class="code"><span class="marker"> </span>   output reg [31:0] NPC;   // next pc</td></tr>
+<tr class="context"><td class="ln">8</td><td class="ln">10</td><td class="code"><span class="marker"> </span>   </td></tr>
+<tr class="context"><td class="ln">9</td><td class="ln">11</td><td class="code"><span class="marker"> </span>   wire [31:0] PCPLUS4;</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">12</td><td class="ln">14</td><td class="code"><span class="marker"> </span>   always @(*) begin</td></tr>
+<tr class="context"><td class="ln">13</td><td class="ln">15</td><td class="code"><span class="marker"> </span>        case (NPCOp)</td></tr>
+<tr class="context"><td class="ln">14</td><td class="ln">16</td><td class="code"><span class="marker"> </span>            `NPC_PLUS4:  NPC = PCPLUS4;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">17</td><td class="code"><span class="marker">+</span>            `NPC_BRANCH: NPC = JumpPC + IMM;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">18</td><td class="code"><span class="marker">+</span>            `NPC_JUMP:   NPC = JumpPC + IMM;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">19</td><td class="code"><span class="marker">+</span>            `NPC_JALR:   NPC = (RS1 + IMM) &amp; 32&#x27;hffff_fffe;</td></tr>
+<tr class="context"><td class="ln">15</td><td class="ln">20</td><td class="code"><span class="marker"> </span>  </td></tr>
+<tr class="context"><td class="ln">16</td><td class="ln">21</td><td class="code"><span class="marker"> </span>            default:     NPC = PCPLUS4;</td></tr>
+<tr class="context"><td class="ln">17</td><td class="ln">22</td><td class="code"><span class="marker"> </span>        endcase</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-10">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>pipeline/PLCPU.v</strong>
+            </div>
+            <div class="numbers">+61 -27</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">41</td><td class="ln">41</td><td class="code"><span class="marker"> </span>	wire [11:0] iimm,simm,bimm;</td></tr>
+<tr class="context"><td class="ln">42</td><td class="ln">42</td><td class="code"><span class="marker"> </span>	wire [19:0] uimm,jimm;</td></tr>
+<tr class="context"><td class="ln">43</td><td class="ln">43</td><td class="code"><span class="marker"> </span>	wire [31:0] immout;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">44</td><td class="code"><span class="marker">+</span>    wire [2:0] EX_DMType;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">45</td><td class="code"><span class="marker">+</span>    wire [2:0] MEM_DMType;</td></tr>
+<tr class="context"><td class="ln">44</td><td class="ln">46</td><td class="code"><span class="marker"> </span>	</td></tr>
+<tr class="context"><td class="ln">45</td><td class="ln">47</td><td class="code"><span class="marker"> </span>	//EX wires</td></tr>
+<tr class="context"><td class="ln">46</td><td class="ln">48</td><td class="code"><span class="marker"> </span>	wire [4:0] EX_rd;</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">115</td><td class="ln">117</td><td class="code"><span class="marker"> </span> // instantiation of pc unit</td></tr>
+<tr class="context"><td class="ln">116</td><td class="ln">118</td><td class="code"><span class="marker"> </span>	PC U_PC(.clk(~clk), .rst(reset), .NPC(NPC), .PC(PC_out) );</td></tr>
+<tr class="context"><td class="ln">117</td><td class="ln">119</td><td class="code"><span class="marker"> </span>	NPC U_NPC(.PC(PC_out), .NPCOp(EX_NPCOp),</td></tr>
+<tr class="delete"><td class="ln">118</td><td class="ln"></td><td class="code"><span class="marker">-</span>	          .IMM(EX_immout), .NPC(NPC));</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">120</td><td class="code"><span class="marker">+</span>	          .JumpPC(EX_pc), .IMM(EX_immout), .RS1(A), .NPC(NPC));</td></tr>
+<tr class="context"><td class="ln">119</td><td class="ln">121</td><td class="code"><span class="marker"> </span>	EXT U_EXT(</td></tr>
+<tr class="delete"><td class="ln">120</td><td class="ln"></td><td class="code"><span class="marker">-</span>		.iimm(iimm), .simm(simm), </td></tr>
+<tr class="delete"><td class="ln">121</td><td class="ln"></td><td class="code"><span class="marker">-</span>		.uimm(uimm), .EXTOp(EXTOp), .immout(immout)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">122</td><td class="code"><span class="marker">+</span>		.iimm(iimm), .simm(simm), .bimm(bimm),</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">123</td><td class="code"><span class="marker">+</span>		.uimm(uimm), .jimm(jimm), .EXTOp(EXTOp), .immout(immout)</td></tr>
+<tr class="context"><td class="ln">122</td><td class="ln">124</td><td class="code"><span class="marker"> </span>	);</td></tr>
+<tr class="context"><td class="ln">123</td><td class="ln">125</td><td class="code"><span class="marker"> </span>	RF U_RF(</td></tr>
+<tr class="context"><td class="ln">124</td><td class="ln">126</td><td class="code"><span class="marker"> </span>		.clk(clk), .rst(reset),</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">132</td><td class="ln">134</td><td class="code"><span class="marker"> </span>	</td></tr>
+<tr class="context"><td class="ln">133</td><td class="ln">135</td><td class="code"><span class="marker"> </span>//please connnect the CPU by yourself</td></tr>
+<tr class="context"><td class="ln">134</td><td class="ln">136</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">137</td><td class="code"><span class="marker">+</span>    wire [31:0] mem_forward_value;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">138</td><td class="code"><span class="marker">+</span>    wire [31:0] wb_forward_value;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">139</td><td class="code"><span class="marker">+</span>    wire [31:0] forward_RD1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">140</td><td class="code"><span class="marker">+</span>    wire [31:0] forward_RD2;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">141</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">142</td><td class="code"><span class="marker">+</span>    assign mem_forward_value =</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">143</td><td class="code"><span class="marker">+</span>        (MEM_WDSel == `WDSel_FromPC)  ? (EX_MEM_out[31:0] + 4) :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">144</td><td class="code"><span class="marker">+</span>        (MEM_WDSel == `WDSel_FromMEM) ? Data_in :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">145</td><td class="code"><span class="marker">+</span>                                         MEM_aluout;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">146</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">147</td><td class="code"><span class="marker">+</span>    assign wb_forward_value =</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">148</td><td class="code"><span class="marker">+</span>        (WB_WDSel == `WDSel_FromPC)  ? (WB_pc + 4) :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">149</td><td class="code"><span class="marker">+</span>        (WB_WDSel == `WDSel_FromMEM) ? WB_MemData :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">150</td><td class="code"><span class="marker">+</span>                                       WB_aluout;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">151</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">152</td><td class="code"><span class="marker">+</span>    assign forward_RD1 =</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">153</td><td class="code"><span class="marker">+</span>        (MEM_RegWrite &amp;&amp; (MEM_rd != 5&#x27;b0) &amp;&amp; (MEM_rd == EX_rs1)) ? mem_forward_value :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">154</td><td class="code"><span class="marker">+</span>        (WB_RegWrite  &amp;&amp; (WB_rd  != 5&#x27;b0) &amp;&amp; (WB_rd  == EX_rs1)) ? wb_forward_value  :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">155</td><td class="code"><span class="marker">+</span>                                                                   EX_RD1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">156</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">157</td><td class="code"><span class="marker">+</span>    assign forward_RD2 =</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">158</td><td class="code"><span class="marker">+</span>        (MEM_RegWrite &amp;&amp; (MEM_rd != 5&#x27;b0) &amp;&amp; (MEM_rd == EX_rs2)) ? mem_forward_value :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">159</td><td class="code"><span class="marker">+</span>        (WB_RegWrite  &amp;&amp; (WB_rd  != 5&#x27;b0) &amp;&amp; (WB_rd  == EX_rs2)) ? wb_forward_value  :</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">160</td><td class="code"><span class="marker">+</span>                                                                   EX_RD2;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">161</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="context"><td class="ln">135</td><td class="ln">162</td><td class="code"><span class="marker"> </span>//WD MUX</td></tr>
+<tr class="context"><td class="ln">136</td><td class="ln">163</td><td class="code"><span class="marker"> </span>always @(*)</td></tr>
+<tr class="context"><td class="ln">137</td><td class="ln">164</td><td class="code"><span class="marker"> </span>begin</td></tr>
+<tr class="context"><td class="ln">138</td><td class="ln">165</td><td class="code"><span class="marker"> </span>	case(WB_WDSel)</td></tr>
+<tr class="delete"><td class="ln">139</td><td class="ln"></td><td class="code"><span class="marker">-</span>		`WDSel_FromALU: WD&lt;=WB_aluout;</td></tr>
+<tr class="delete"><td class="ln">140</td><td class="ln"></td><td class="code"><span class="marker">-</span>		`WDSel_FromMEM: WD&lt;=WB_MemData;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">166</td><td class="code"><span class="marker">+</span>		`WDSel_FromALU: WD=WB_aluout;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">167</td><td class="code"><span class="marker">+</span>		`WDSel_FromMEM: WD=WB_MemData;</td></tr>
+<tr class="context"><td class="ln">141</td><td class="ln">168</td><td class="code"><span class="marker"> </span>		`WDSel_FromPC:  WD&lt;=WB_pc+4;  //WB_pc��ǰ�漸����δ��4����Jָ��ԭʼ��ַ</td></tr>
+<tr class="context"><td class="ln">142</td><td class="ln">169</td><td class="code"><span class="marker"> </span>	endcase</td></tr>
+<tr class="context"><td class="ln">143</td><td class="ln">170</td><td class="code"><span class="marker"> </span>end</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">148</td><td class="ln">175</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">149</td><td class="ln">176</td><td class="code"><span class="marker"> </span>    always @(*) </td></tr>
+<tr class="context"><td class="ln">150</td><td class="ln">177</td><td class="code"><span class="marker"> </span>    begin</td></tr>
+<tr class="delete"><td class="ln">151</td><td class="ln"></td><td class="code"><span class="marker">-</span>        alu_in1 &lt;= EX_RD1; //from regfile</td></tr>
+<tr class="delete"><td class="ln">152</td><td class="ln"></td><td class="code"><span class="marker">-</span>        alu_in2 &lt;= EX_RD2; //from regfile</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">178</td><td class="code"><span class="marker">+</span>        alu_in1 = forward_RD1; //from regfile or forwarding paths</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">179</td><td class="code"><span class="marker">+</span>        alu_in2 = forward_RD2; //from regfile or forwarding paths</td></tr>
+<tr class="context"><td class="ln">153</td><td class="ln">180</td><td class="code"><span class="marker"> </span>    end</td></tr>
+<tr class="context"><td class="ln">154</td><td class="ln">181</td><td class="code"><span class="marker"> </span>    </td></tr>
+<tr class="context"><td class="ln">155</td><td class="ln">182</td><td class="code"><span class="marker"> </span>    always @(*) </td></tr>
+<tr class="delete"><td class="ln">156</td><td class="ln"></td><td class="code"><span class="marker">-</span>        memdata_wr &lt;= MEM_RD2;//from MEM</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">183</td><td class="code"><span class="marker">+</span>        memdata_wr = MEM_RD2;//from MEM</td></tr>
+<tr class="context"><td class="ln">157</td><td class="ln">184</td><td class="code"><span class="marker"> </span>        </td></tr>
+<tr class="context"><td class="ln">158</td><td class="ln">185</td><td class="code"><span class="marker"> </span>    assign A = alu_in1;</td></tr>
+<tr class="context"><td class="ln">159</td><td class="ln">186</td><td class="code"><span class="marker"> </span>    assign B = (EX_ALUSrc) ? EX_immout : alu_in2;//whether from EXT</td></tr>
+<tr class="context"><td class="ln">160</td><td class="ln">187</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">188</td><td class="code"><span class="marker">+</span>    wire jump_flush;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">189</td><td class="code"><span class="marker">+</span>    assign jump_flush = (EX_NPCOp != `NPC_PLUS4);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">190</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="context"><td class="ln">161</td><td class="ln">191</td><td class="code"><span class="marker"> </span>//-----pipe registers--------------</td></tr>
+<tr class="context"><td class="ln">162</td><td class="ln">192</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">163</td><td class="ln">193</td><td class="code"><span class="marker"> </span>    //IF_ID: [31:0] PC [31:0]instr</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">194</td><td class="code"><span class="marker">+</span>    wire [63:0] IF_ID_raw_in;</td></tr>
+<tr class="context"><td class="ln">164</td><td class="ln">195</td><td class="code"><span class="marker"> </span>    wire [63:0] IF_ID_in;</td></tr>
+<tr class="delete"><td class="ln">165</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign IF_ID_in[31:0] = PC_out;//original addr of the current ins in ID, not PC+4</td></tr>
+<tr class="delete"><td class="ln">166</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign IF_ID_in[63:32] = inst_in;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">196</td><td class="code"><span class="marker">+</span>    assign IF_ID_raw_in[31:0] = PC_out;//original addr of the current ins in ID, not PC+4</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">197</td><td class="code"><span class="marker">+</span>    assign IF_ID_raw_in[63:32] = inst_in;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">198</td><td class="code"><span class="marker">+</span>    assign IF_ID_in = jump_flush ? 64&#x27;b0 : IF_ID_raw_in;</td></tr>
+<tr class="context"><td class="ln">167</td><td class="ln">199</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">168</td><td class="ln">200</td><td class="code"><span class="marker"> </span>    wire [63:0] IF_ID_out;</td></tr>
+<tr class="context"><td class="ln">169</td><td class="ln">201</td><td class="code"><span class="marker"> </span>    assign instr = IF_ID_out[63:32];</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">174</td><td class="ln">206</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">175</td><td class="ln">207</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">176</td><td class="ln">208</td><td class="code"><span class="marker"> </span>    //ID_EX</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">209</td><td class="code"><span class="marker">+</span>    wire [193:0] ID_EX_raw_in;</td></tr>
+<tr class="context"><td class="ln">177</td><td class="ln">210</td><td class="code"><span class="marker"> </span>    wire [193:0] ID_EX_in;</td></tr>
+<tr class="delete"><td class="ln">178</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[31:0] = IF_ID_out[31:0];//PC</td></tr>
+<tr class="delete"><td class="ln">179</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[36:32] = rd;</td></tr>
+<tr class="delete"><td class="ln">180</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[41:37] = rs1;</td></tr>
+<tr class="delete"><td class="ln">181</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[46:42] = rs2;</td></tr>
+<tr class="delete"><td class="ln">182</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[78:47] = immout;</td></tr>
+<tr class="delete"><td class="ln">183</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[110:79] = RD1;</td></tr>
+<tr class="delete"><td class="ln">184</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[142:111] = RD2;</td></tr>
+<tr class="delete"><td class="ln">185</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[143] = RegWrite;//RFWr</td></tr>
+<tr class="delete"><td class="ln">186</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[144] = ID_MemWrite;//DMWr</td></tr>
+<tr class="delete"><td class="ln">187</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[149:145] = ALUOp;</td></tr>
+<tr class="delete"><td class="ln">188</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[154:150] = NPCOp;</td></tr>
+<tr class="delete"><td class="ln">189</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[155] = ALUSrc;</td></tr>
+<tr class="delete"><td class="ln">190</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[158:156] = 3&#x27;b000;  //nop, reserved for mem access</td></tr>
+<tr class="delete"><td class="ln">191</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[160:159] = WDSel;</td></tr>
+<tr class="delete"><td class="ln">192</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[161] = ID_MemRead;</td></tr>
+<tr class="delete"><td class="ln">193</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ID_EX_in[193:162] = IF_ID_out[63:32];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">211</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[31:0] = IF_ID_out[31:0];//PC</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">212</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[36:32] = rd;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">213</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[41:37] = rs1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">214</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[46:42] = rs2;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">215</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[78:47] = immout;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">216</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[110:79] = RD1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">217</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[142:111] = RD2;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">218</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[143] = RegWrite;//RFWr</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">219</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[144] = ID_MemWrite;//DMWr</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">220</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[149:145] = ALUOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">221</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[154:150] = NPCOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">222</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[155] = ALUSrc;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">223</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[158:156] = 3&#x27;b000;  //nop, reserved for mem access</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">224</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[160:159] = WDSel;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">225</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[161] = ID_MemRead;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">226</td><td class="code"><span class="marker">+</span>    assign ID_EX_raw_in[193:162] = IF_ID_out[63:32];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">227</td><td class="code"><span class="marker">+</span>    assign ID_EX_in = jump_flush ? 194&#x27;b0 : ID_EX_raw_in;</td></tr>
+<tr class="context"><td class="ln">194</td><td class="ln">228</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">195</td><td class="ln">229</td><td class="code"><span class="marker"> </span>    wire [193:0] ID_EX_out;</td></tr>
+<tr class="context"><td class="ln">196</td><td class="ln">230</td><td class="code"><span class="marker"> </span>    //wire [31:0] EX_inst;</td></tr>
+<tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">274</td><td class="ln">308</td><td class="code"><span class="marker"> </span>    (.clk(~clk), .rst(reset), </td></tr>
+<tr class="context"><td class="ln">275</td><td class="ln">309</td><td class="code"><span class="marker"> </span>    .in(MEM_WB_in), .out(MEM_WB_out));</td></tr>
+<tr class="context"><td class="ln">276</td><td class="ln">310</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">277</td><td class="ln"></td><td class="code"><span class="marker">-</span>endmodule</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">311</td><td class="code"><span class="marker">+</span>endmodule</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-11">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>pipeline/alu.v</strong>
+            </div>
+            <div class="numbers">+29 -20</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="skip"><td></td><td></td><td class="code">...</td></tr>
+<tr class="context"><td class="ln">4</td><td class="ln">4</td><td class="code"><span class="marker"> </span>   input  signed [31:0] A, B;</td></tr>
+<tr class="context"><td class="ln">5</td><td class="ln">5</td><td class="code"><span class="marker"> </span>   input         [4:0]  ALUOp;</td></tr>
+<tr class="context"><td class="ln">6</td><td class="ln">6</td><td class="code"><span class="marker"> </span>   output signed [31:0] C;</td></tr>
+<tr class="delete"><td class="ln">7</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output Zero;  //condition flag: set if condition is true for B-type instruction</td></tr>
+<tr class="delete"><td class="ln">8</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">7</td><td class="code"><span class="marker">+</span>   output Zero;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">8</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="context"><td class="ln">9</td><td class="ln">9</td><td class="code"><span class="marker"> </span>   reg [31:0] C;</td></tr>
+<tr class="delete"><td class="ln">10</td><td class="ln"></td><td class="code"><span class="marker">-</span>   integer    i;</td></tr>
+<tr class="delete"><td class="ln">11</td><td class="ln"></td><td class="code"><span class="marker">-</span>       </td></tr>
+<tr class="delete"><td class="ln">12</td><td class="ln"></td><td class="code"><span class="marker">-</span>   always @( * ) begin</td></tr>
+<tr class="delete"><td class="ln">13</td><td class="ln"></td><td class="code"><span class="marker">-</span>      case ( ALUOp )</td></tr>
+<tr class="delete"><td class="ln">14</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_lui:C=B;</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_add:C=A+B;</td></tr>
+<tr class="delete"><td class="ln">16</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_sub:C=A-B;  //and beq</td></tr>
+<tr class="delete"><td class="ln">17</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_xor:C=A^B;</td></tr>
+<tr class="delete"><td class="ln">18</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_or:C=A|B;</td></tr>
+<tr class="delete"><td class="ln">19</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_and:C=A&amp;B;</td></tr>
+<tr class="delete"><td class="ln">20</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_sll:C=A&lt;&lt;B;</td></tr>
+<tr class="delete"><td class="ln">21</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_srl:C=A&gt;&gt;B;</td></tr>
+<tr class="delete"><td class="ln">22</td><td class="ln"></td><td class="code"><span class="marker">-</span>        `ALUOp_sra:C=A&gt;&gt;&gt;B;</td></tr>
+<tr class="delete"><td class="ln">23</td><td class="ln"></td><td class="code"><span class="marker">-</span>        default: C=A;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">10</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">11</td><td class="code"><span class="marker">+</span>   always @(*) begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">12</td><td class="code"><span class="marker">+</span>      case (ALUOp)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">13</td><td class="code"><span class="marker">+</span>      `ALUOp_lui:  C = B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">14</td><td class="code"><span class="marker">+</span>      `ALUOp_add:  C = A + B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">15</td><td class="code"><span class="marker">+</span>      `ALUOp_sub:  C = A - B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">16</td><td class="code"><span class="marker">+</span>      `ALUOp_bne:  C = (A != B);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">17</td><td class="code"><span class="marker">+</span>      `ALUOp_blt:  C = (A &lt; B);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">18</td><td class="code"><span class="marker">+</span>      `ALUOp_bge:  C = (A &gt;= B);</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">19</td><td class="code"><span class="marker">+</span>      `ALUOp_bltu: C = ($unsigned(A) &lt; $unsigned(B));</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">20</td><td class="code"><span class="marker">+</span>      `ALUOp_bgeu: C = ($unsigned(A) &gt;= $unsigned(B));</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">21</td><td class="code"><span class="marker">+</span>      `ALUOp_slt:  C = (A &lt; B) ? 32&#x27;d1 : 32&#x27;d0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">22</td><td class="code"><span class="marker">+</span>      `ALUOp_sltu: C = ($unsigned(A) &lt; $unsigned(B)) ? 32&#x27;d1 : 32&#x27;d0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">23</td><td class="code"><span class="marker">+</span>      `ALUOp_xor:  C = A ^ B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">24</td><td class="code"><span class="marker">+</span>      `ALUOp_or:   C = A | B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">25</td><td class="code"><span class="marker">+</span>      `ALUOp_and:  C = A &amp; B;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">26</td><td class="code"><span class="marker">+</span>      `ALUOp_sll:  C = A &lt;&lt; B[4:0];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">27</td><td class="code"><span class="marker">+</span>      `ALUOp_srl:  C = $unsigned(A) &gt;&gt; B[4:0];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">28</td><td class="code"><span class="marker">+</span>      `ALUOp_sra:  C = A &gt;&gt;&gt; B[4:0];</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">29</td><td class="code"><span class="marker">+</span>      default:     C = A;</td></tr>
+<tr class="context"><td class="ln">24</td><td class="ln">30</td><td class="code"><span class="marker"> </span>      endcase</td></tr>
+<tr class="delete"><td class="ln">25</td><td class="ln"></td><td class="code"><span class="marker">-</span>   end </td></tr>
+<tr class="delete"><td class="ln">26</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">27</td><td class="ln"></td><td class="code"><span class="marker">-</span>   assign Zero = (C == 32&#x27;b0);  </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">31</td><td class="code"><span class="marker">+</span>   end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">32</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">33</td><td class="code"><span class="marker">+</span>   assign Zero = (ALUOp == `ALUOp_bne ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">34</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_blt ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">35</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_bge ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">36</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_bltu ||</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">37</td><td class="code"><span class="marker">+</span>                  ALUOp == `ALUOp_bgeu) ? (C != 32&#x27;b0) : (C == 32&#x27;b0);</td></tr>
+<tr class="context"><td class="ln">28</td><td class="ln">38</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="context"><td class="ln">29</td><td class="ln">39</td><td class="code"><span class="marker"> </span>endmodule</td></tr>
+<tr class="delete"><td class="ln">30</td><td class="ln"></td><td class="code"><span class="marker">-</span>    </td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-12">
+          <header>
+            <div>
+              <span class="status modified">modified</span>
+              <strong>pipeline/ctrl.v</strong>
+            </div>
+            <div class="numbers">+126 -87</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="delete"><td class="ln">1</td><td class="ln"></td><td class="code"><span class="marker">-</span> `include &quot;ctrl_encode_def.v&quot;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">1</td><td class="code"><span class="marker">+</span>`include &quot;ctrl_encode_def.v&quot;</td></tr>
+<tr class="context"><td class="ln">2</td><td class="ln">2</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">3</td><td class="ln"></td><td class="code"><span class="marker">-</span>module ctrl(Op, Funct7, Funct3, Zero, </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">3</td><td class="code"><span class="marker">+</span>module ctrl(Op, Funct7, Funct3, Zero,</td></tr>
+<tr class="context"><td class="ln">4</td><td class="ln">4</td><td class="code"><span class="marker"> </span>            RegWrite, MemWrite, MemRead,</td></tr>
+<tr class="delete"><td class="ln">5</td><td class="ln"></td><td class="code"><span class="marker">-</span>            EXTOp, ALUOp, NPCOp, </td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">5</td><td class="code"><span class="marker">+</span>            EXTOp, ALUOp, NPCOp,</td></tr>
+<tr class="context"><td class="ln">6</td><td class="ln">6</td><td class="code"><span class="marker"> </span>            ALUSrc, WDSel</td></tr>
+<tr class="context"><td class="ln">7</td><td class="ln">7</td><td class="code"><span class="marker"> </span>            );</td></tr>
+<tr class="delete"><td class="ln">8</td><td class="ln"></td><td class="code"><span class="marker">-</span>            </td></tr>
+<tr class="delete"><td class="ln">9</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [6:0] Op;       // opcode</td></tr>
+<tr class="delete"><td class="ln">10</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [6:0] Funct7;    // funct7</td></tr>
+<tr class="delete"><td class="ln">11</td><td class="ln"></td><td class="code"><span class="marker">-</span>   input  [2:0] Funct3;    // funct3</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">8</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">9</td><td class="code"><span class="marker">+</span>   input  [6:0] Op;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">10</td><td class="code"><span class="marker">+</span>   input  [6:0] Funct7;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">11</td><td class="code"><span class="marker">+</span>   input  [2:0] Funct3;</td></tr>
+<tr class="context"><td class="ln">12</td><td class="ln">12</td><td class="code"><span class="marker"> </span>   input        Zero;</td></tr>
+<tr class="delete"><td class="ln">13</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">14</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       RegWrite; // control signal for register write</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       MemWrite; // control signal for memory write</td></tr>
+<tr class="delete"><td class="ln">16</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       MemRead;  // control signal for memory read</td></tr>
+<tr class="delete"><td class="ln">17</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [5:0] EXTOp;    // control signal to signed extension</td></tr>
+<tr class="delete"><td class="ln">18</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [4:0] ALUOp;    // ALU opertion</td></tr>
+<tr class="delete"><td class="ln">19</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [4:0] NPCOp;    // next pc operation</td></tr>
+<tr class="delete"><td class="ln">20</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output       ALUSrc;   // ALU source for B</td></tr>
+<tr class="delete"><td class="ln">21</td><td class="ln"></td><td class="code"><span class="marker">-</span>   output [1:0] WDSel;    // (register) write data selection</td></tr>
+<tr class="delete"><td class="ln">22</td><td class="ln"></td><td class="code"><span class="marker">-</span>   </td></tr>
+<tr class="delete"><td class="ln">23</td><td class="ln"></td><td class="code"><span class="marker">-</span>   //LUI</td></tr>
+<tr class="delete"><td class="ln">24</td><td class="ln"></td><td class="code"><span class="marker">-</span>   wire LUI = ~Op[6]&amp;Op[5]&amp;Op[4]&amp;~Op[3]&amp;Op[2]&amp;Op[1]&amp;Op[0];</td></tr>
+<tr class="context"><td class="ln">25</td><td class="ln">13</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">26</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // r format 0110011</td></tr>
+<tr class="delete"><td class="ln">27</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire rtype  = ~Op[6]&amp;Op[5]&amp;Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0110011</td></tr>
+<tr class="delete"><td class="ln">28</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_add  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp;~Funct3[2]&amp;~Funct3[1]&amp;~Funct3[0]; // add 0000000 000</td></tr>
+<tr class="delete"><td class="ln">29</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sub  = rtype&amp; ~Funct7[6]&amp; Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp;~Funct3[2]&amp;~Funct3[1]&amp;~Funct3[0]; // sub 0100000 000</td></tr>
+<tr class="delete"><td class="ln">30</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_or   = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp; Funct3[1]&amp;~Funct3[0]; // or 0000000 110</td></tr>
+<tr class="delete"><td class="ln">31</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_and  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp; Funct3[1]&amp; Funct3[0]; // and 0000000 111</td></tr>
+<tr class="delete"><td class="ln">32</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_xor  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp;~Funct3[1]&amp;~Funct3[0]; // xor 0000000 100</td></tr>
+<tr class="delete"><td class="ln">33</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sll  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp;~Funct3[2]&amp;~Funct3[1]&amp; Funct3[0]; // sll 0000000 001</td></tr>
+<tr class="delete"><td class="ln">34</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_srl  = rtype&amp; ~Funct7[6]&amp;~Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp;~Funct3[1]&amp; Funct3[0]; // srl 0000000 101</td></tr>
+<tr class="delete"><td class="ln">35</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sra  = rtype&amp; ~Funct7[6]&amp; Funct7[5]&amp;~Funct7[4]&amp;~Funct7[3]&amp;~Funct7[2]&amp;~Funct7[1]&amp;~Funct7[0]&amp; Funct3[2]&amp;~Funct3[1]&amp; Funct3[0]; // sra 0100000 101</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">14</td><td class="code"><span class="marker">+</span>   output reg       RegWrite;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">15</td><td class="code"><span class="marker">+</span>   output reg       MemWrite;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">16</td><td class="code"><span class="marker">+</span>   output reg       MemRead;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">17</td><td class="code"><span class="marker">+</span>   output reg [5:0] EXTOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">18</td><td class="code"><span class="marker">+</span>   output reg [4:0] ALUOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">19</td><td class="code"><span class="marker">+</span>   output reg [4:0] NPCOp;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">20</td><td class="code"><span class="marker">+</span>   output reg       ALUSrc;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">21</td><td class="code"><span class="marker">+</span>   output reg [1:0] WDSel;</td></tr>
+<tr class="context"><td class="ln">36</td><td class="ln">22</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">37</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // i format load 0000011</td></tr>
+<tr class="delete"><td class="ln">38</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire itype_l  = ~Op[6]&amp;~Op[5]&amp;~Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0000011</td></tr>
+<tr class="delete"><td class="ln">39</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_lw = itype_l&amp;~Funct3[2]&amp; Funct3[1]&amp;~Funct3[0];//lw 010   </td></tr>
+<tr class="delete"><td class="ln">40</td><td class="ln"></td><td class="code"><span class="marker">-</span>    </td></tr>
+<tr class="delete"><td class="ln">41</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // i format 0010011</td></tr>
+<tr class="delete"><td class="ln">42</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire itype_r  = ~Op[6]&amp;~Op[5]&amp;Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0]; //0010011</td></tr>
+<tr class="delete"><td class="ln">43</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_addi  =  itype_r&amp; ~Funct3[2]&amp; ~Funct3[1]&amp; ~Funct3[0]; // addi 000</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">23</td><td class="code"><span class="marker">+</span>   always @(*) begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">24</td><td class="code"><span class="marker">+</span>      RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">25</td><td class="code"><span class="marker">+</span>      MemWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">26</td><td class="code"><span class="marker">+</span>      MemRead  = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">27</td><td class="code"><span class="marker">+</span>      EXTOp    = 6&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">28</td><td class="code"><span class="marker">+</span>      ALUOp    = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">29</td><td class="code"><span class="marker">+</span>      NPCOp    = `NPC_PLUS4;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">30</td><td class="code"><span class="marker">+</span>      ALUSrc   = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">31</td><td class="code"><span class="marker">+</span>      WDSel    = `WDSel_FromALU;</td></tr>
+<tr class="context"><td class="ln">44</td><td class="ln">32</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">45</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // s format 0100011</td></tr>
+<tr class="delete"><td class="ln">46</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire stype  = ~Op[6]&amp;Op[5]&amp;~Op[4]&amp;~Op[3]&amp;~Op[2]&amp;Op[1]&amp;Op[0];//0100011</td></tr>
+<tr class="delete"><td class="ln">47</td><td class="ln"></td><td class="code"><span class="marker">-</span>    wire i_sw   =  stype&amp; ~Funct3[2]&amp; Funct3[1]&amp;~Funct3[0]; // sw 010</td></tr>
+<tr class="delete"><td class="ln">48</td><td class="ln"></td><td class="code"><span class="marker">-</span>    </td></tr>
+<tr class="delete"><td class="ln">49</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // generate control signals</td></tr>
+<tr class="delete"><td class="ln">50</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign RegWrite   = rtype | itype_r | LUI | itype_l; // register write</td></tr>
+<tr class="delete"><td class="ln">51</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign MemWrite   = stype;                // memory write</td></tr>
+<tr class="delete"><td class="ln">52</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign MemRead    = itype_l;              // memory read</td></tr>
+<tr class="delete"><td class="ln">53</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign ALUSrc     = itype_r | stype | LUI | itype_l;   // ALU B is from instruction immediate</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">33</td><td class="code"><span class="marker">+</span>      case (Op)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">34</td><td class="code"><span class="marker">+</span>      7&#x27;b0110111: begin // lui</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">35</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">36</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">37</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_UTYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">38</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_lui;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">39</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">54</td><td class="ln">40</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">55</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // signed extension</td></tr>
+<tr class="delete"><td class="ln">56</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_ITYPE_SHAMT 6&#x27;b100000</td></tr>
+<tr class="delete"><td class="ln">57</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_ITYPE	      6&#x27;b010000</td></tr>
+<tr class="delete"><td class="ln">58</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_STYPE	      6&#x27;b001000</td></tr>
+<tr class="delete"><td class="ln">59</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_BTYPE	      6&#x27;b000100</td></tr>
+<tr class="delete"><td class="ln">60</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_UTYPE	      6&#x27;b000010</td></tr>
+<tr class="delete"><td class="ln">61</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // EXT_CTRL_JTYPE	      6&#x27;b000001</td></tr>
+<tr class="delete"><td class="ln">62</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[5]    = 0;</td></tr>
+<tr class="delete"><td class="ln">63</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[4]    = i_addi | itype_l;</td></tr>
+<tr class="delete"><td class="ln">64</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[3]    = stype; </td></tr>
+<tr class="delete"><td class="ln">65</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[2]    = 0; </td></tr>
+<tr class="delete"><td class="ln">66</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[1]    = LUI;</td></tr>
+<tr class="delete"><td class="ln">67</td><td class="ln"></td><td class="code"><span class="marker">-</span>  assign EXTOp[0]    = 0;         </td></tr>
+<tr class="delete"><td class="ln">68</td><td class="ln"></td><td class="code"><span class="marker">-</span>    </td></tr>
+<tr class="delete"><td class="ln">69</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // WDSel_FromALU 2&#x27;b00</td></tr>
+<tr class="delete"><td class="ln">70</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // WDSel_FromMEM 2&#x27;b01</td></tr>
+<tr class="delete"><td class="ln">71</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // WDSel_FromPC  2&#x27;b10 </td></tr>
+<tr class="delete"><td class="ln">72</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign WDSel[1] = 0;</td></tr>
+<tr class="delete"><td class="ln">73</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign WDSel[0] = itype_l;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">41</td><td class="code"><span class="marker">+</span>      7&#x27;b0110011: begin // R-type</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">42</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">43</td><td class="code"><span class="marker">+</span>         case ({Funct7, Funct3})</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">44</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b000}: ALUOp = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">45</td><td class="code"><span class="marker">+</span>         {7&#x27;b0100000, 3&#x27;b000}: ALUOp = `ALUOp_sub;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">46</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b010}: ALUOp = `ALUOp_slt;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">47</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b011}: ALUOp = `ALUOp_sltu;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">48</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b100}: ALUOp = `ALUOp_xor;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">49</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b110}: ALUOp = `ALUOp_or;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">50</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b111}: ALUOp = `ALUOp_and;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">51</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b001}: ALUOp = `ALUOp_sll;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">52</td><td class="code"><span class="marker">+</span>         {7&#x27;b0000000, 3&#x27;b101}: ALUOp = `ALUOp_srl;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">53</td><td class="code"><span class="marker">+</span>         {7&#x27;b0100000, 3&#x27;b101}: ALUOp = `ALUOp_sra;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">54</td><td class="code"><span class="marker">+</span>         default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">55</td><td class="code"><span class="marker">+</span>            RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">56</td><td class="code"><span class="marker">+</span>            ALUOp = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">57</td><td class="code"><span class="marker">+</span>         end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">58</td><td class="code"><span class="marker">+</span>         endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">59</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">74</td><td class="ln">60</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">75</td><td class="ln"></td><td class="code"><span class="marker">-</span>// NPC_PLUS4      5&#x27;b00000</td></tr>
+<tr class="delete"><td class="ln">76</td><td class="ln"></td><td class="code"><span class="marker">-</span>// NPC_BRANCH     5&#x27;b00001</td></tr>
+<tr class="delete"><td class="ln">77</td><td class="ln"></td><td class="code"><span class="marker">-</span>// NPC_JUMP       5&#x27;b00010</td></tr>
+<tr class="delete"><td class="ln">78</td><td class="ln"></td><td class="code"><span class="marker">-</span>// NPC_JALR       5&#x27;b00100</td></tr>
+<tr class="delete"><td class="ln">79</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign NPCOp[2] = 0;</td></tr>
+<tr class="delete"><td class="ln">80</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign NPCOp[1] = 0;</td></tr>
+<tr class="delete"><td class="ln">81</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign NPCOp[0] = 0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">61</td><td class="code"><span class="marker">+</span>      7&#x27;b0010011: begin // I-type arithmetic and shifts</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">62</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">63</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">64</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_ITYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">65</td><td class="code"><span class="marker">+</span>         case (Funct3)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">66</td><td class="code"><span class="marker">+</span>         3&#x27;b000: ALUOp = `ALUOp_add;  // addi</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">67</td><td class="code"><span class="marker">+</span>         3&#x27;b010: ALUOp = `ALUOp_slt;  // slti</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">68</td><td class="code"><span class="marker">+</span>         3&#x27;b011: ALUOp = `ALUOp_sltu; // sltiu</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">69</td><td class="code"><span class="marker">+</span>         3&#x27;b100: ALUOp = `ALUOp_xor;  // xori</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">70</td><td class="code"><span class="marker">+</span>         3&#x27;b110: ALUOp = `ALUOp_or;   // ori</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">71</td><td class="code"><span class="marker">+</span>         3&#x27;b111: ALUOp = `ALUOp_and;  // andi</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">72</td><td class="code"><span class="marker">+</span>         3&#x27;b001: ALUOp = (Funct7 == 7&#x27;b0000000) ? `ALUOp_sll : `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">73</td><td class="code"><span class="marker">+</span>         3&#x27;b101: ALUOp = (Funct7 == 7&#x27;b0100000) ? `ALUOp_sra : `ALUOp_srl;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">74</td><td class="code"><span class="marker">+</span>         default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">75</td><td class="code"><span class="marker">+</span>            RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">76</td><td class="code"><span class="marker">+</span>            ALUOp = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">77</td><td class="code"><span class="marker">+</span>         end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">78</td><td class="code"><span class="marker">+</span>         endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">79</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="context"><td class="ln">82</td><td class="ln">80</td><td class="code"><span class="marker"> </span></td></tr>
+<tr class="delete"><td class="ln">83</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_nop 5&#x27;b00000</td></tr>
+<tr class="delete"><td class="ln">84</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_lui 5&#x27;b00001</td></tr>
+<tr class="delete"><td class="ln">85</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_add 5&#x27;b00011</td></tr>
+<tr class="delete"><td class="ln">86</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_sub 5&#x27;b00100</td></tr>
+<tr class="delete"><td class="ln">87</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_xor 5&#x27;b01100</td></tr>
+<tr class="delete"><td class="ln">88</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_or 5&#x27;b01101</td></tr>
+<tr class="delete"><td class="ln">89</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_and 5&#x27;b01110</td></tr>
+<tr class="delete"><td class="ln">90</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_sll 5&#x27;b01111</td></tr>
+<tr class="delete"><td class="ln">91</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_srl 5&#x27;b10000</td></tr>
+<tr class="delete"><td class="ln">92</td><td class="ln"></td><td class="code"><span class="marker">-</span>// ALUOp_sra 5&#x27;b10001</td></tr>
+<tr class="delete"><td class="ln">93</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[4] = i_srl | i_sra;</td></tr>
+<tr class="delete"><td class="ln">94</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[3] = i_and | i_or | i_sll | i_xor;</td></tr>
+<tr class="delete"><td class="ln">95</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[2] = i_and | i_or | i_sub | i_sll | i_xor;</td></tr>
+<tr class="delete"><td class="ln">96</td><td class="ln"></td><td class="code"><span class="marker">-</span>    assign ALUOp[1] = i_addi | i_add | i_and | i_sll | itype_l | stype ;</td></tr>
+<tr class="delete"><td class="ln">97</td><td class="ln"></td><td class="code"><span class="marker">-</span>	  assign ALUOp[0] = i_addi | i_add | i_or | LUI | i_sll | i_sra | itype_l | stype ;</td></tr>
+<tr class="delete"><td class="ln">98</td><td class="ln"></td><td class="code"><span class="marker">-</span>	</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">81</td><td class="code"><span class="marker">+</span>      7&#x27;b0000011: begin // lw</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">82</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">83</td><td class="code"><span class="marker">+</span>         MemRead  = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">84</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">85</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_ITYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">86</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">87</td><td class="code"><span class="marker">+</span>         WDSel    = `WDSel_FromMEM;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">88</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">89</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">90</td><td class="code"><span class="marker">+</span>      7&#x27;b0100011: begin // sw</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">91</td><td class="code"><span class="marker">+</span>         MemWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">92</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">93</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_STYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">94</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">95</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">96</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">97</td><td class="code"><span class="marker">+</span>      7&#x27;b1100011: begin // B-type branches</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">98</td><td class="code"><span class="marker">+</span>         EXTOp = `EXT_CTRL_BTYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">99</td><td class="code"><span class="marker">+</span>         NPCOp = `NPC_BRANCH;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">100</td><td class="code"><span class="marker">+</span>         case (Funct3)</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">101</td><td class="code"><span class="marker">+</span>         3&#x27;b000: ALUOp = `ALUOp_sub;  // beq</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">102</td><td class="code"><span class="marker">+</span>         3&#x27;b001: ALUOp = `ALUOp_bne;  // bne</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">103</td><td class="code"><span class="marker">+</span>         3&#x27;b100: ALUOp = `ALUOp_blt;  // blt</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">104</td><td class="code"><span class="marker">+</span>         3&#x27;b101: ALUOp = `ALUOp_bge;  // bge</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">105</td><td class="code"><span class="marker">+</span>         3&#x27;b110: ALUOp = `ALUOp_bltu; // bltu</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">106</td><td class="code"><span class="marker">+</span>         3&#x27;b111: ALUOp = `ALUOp_bgeu; // bgeu</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">107</td><td class="code"><span class="marker">+</span>         default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">108</td><td class="code"><span class="marker">+</span>            ALUOp = `ALUOp_nop;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">109</td><td class="code"><span class="marker">+</span>            NPCOp = `NPC_PLUS4;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">110</td><td class="code"><span class="marker">+</span>         end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">111</td><td class="code"><span class="marker">+</span>         endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">112</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">113</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">114</td><td class="code"><span class="marker">+</span>      7&#x27;b1101111: begin // jal</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">115</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">116</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_JTYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">117</td><td class="code"><span class="marker">+</span>         NPCOp    = `NPC_JUMP;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">118</td><td class="code"><span class="marker">+</span>         WDSel    = `WDSel_FromPC;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">119</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">120</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">121</td><td class="code"><span class="marker">+</span>      7&#x27;b1100111: begin // jalr</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">122</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">123</td><td class="code"><span class="marker">+</span>         ALUSrc   = 1&#x27;b1;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">124</td><td class="code"><span class="marker">+</span>         EXTOp    = `EXT_CTRL_ITYPE;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">125</td><td class="code"><span class="marker">+</span>         ALUOp    = `ALUOp_add;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">126</td><td class="code"><span class="marker">+</span>         NPCOp    = `NPC_JALR;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">127</td><td class="code"><span class="marker">+</span>         WDSel    = `WDSel_FromPC;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">128</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">129</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">130</td><td class="code"><span class="marker">+</span>      default: begin</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">131</td><td class="code"><span class="marker">+</span>         RegWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">132</td><td class="code"><span class="marker">+</span>         MemWrite = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">133</td><td class="code"><span class="marker">+</span>         MemRead  = 1&#x27;b0;</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">134</td><td class="code"><span class="marker">+</span>      end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">135</td><td class="code"><span class="marker">+</span>      endcase</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">136</td><td class="code"><span class="marker">+</span>   end</td></tr>
+<tr class="insert"><td class="ln"></td><td class="ln">137</td><td class="code"><span class="marker">+</span></td></tr>
+<tr class="context"><td class="ln">99</td><td class="ln">138</td><td class="code"><span class="marker"> </span>endmodule</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+
+        <section class="file" id="file-13">
+          <header>
+            <div>
+              <span class="status deleted">deleted</span>
+              <strong>pipeline/plcomp_tb.v</strong>
+            </div>
+            <div class="numbers">+0 -28</div>
+          </header>
+          <table>
+            <tbody>
+              <tr class="delete"><td class="ln">1</td><td class="ln"></td><td class="code"><span class="marker">-</span>`timescale 1ns/1ns </td></tr>
+<tr class="delete"><td class="ln">2</td><td class="ln"></td><td class="code"><span class="marker">-</span>module plcomp_tb();</td></tr>
+<tr class="delete"><td class="ln">3</td><td class="ln"></td><td class="code"><span class="marker">-</span>  reg   clk, rstn;</td></tr>
+<tr class="delete"><td class="ln">4</td><td class="ln"></td><td class="code"><span class="marker">-</span>  integer i=0;  //for debug</td></tr>
+<tr class="delete"><td class="ln">5</td><td class="ln"></td><td class="code"><span class="marker">-</span></td></tr>
+<tr class="delete"><td class="ln">6</td><td class="ln"></td><td class="code"><span class="marker">-</span>  // instantiation of plcomp</td></tr>
+<tr class="delete"><td class="ln">7</td><td class="ln"></td><td class="code"><span class="marker">-</span>  plcomp plcomp(clk, rstn);</td></tr>
+<tr class="delete"><td class="ln">8</td><td class="ln"></td><td class="code"><span class="marker">-</span>  </td></tr>
+<tr class="delete"><td class="ln">9</td><td class="ln"></td><td class="code"><span class="marker">-</span>  initial begin</td></tr>
+<tr class="delete"><td class="ln">10</td><td class="ln"></td><td class="code"><span class="marker">-</span>    // input instructions for simulation</td></tr>
+<tr class="delete"><td class="ln">11</td><td class="ln"></td><td class="code"><span class="marker">-</span>    $readmemh(&quot;rv32_pl_sim.dat&quot;, plcomp.U_imem.RAM); //( 21 ins-25cycles )</td></tr>
+<tr class="delete"><td class="ln">12</td><td class="ln"></td><td class="code"><span class="marker">-</span>    clk = 0;</td></tr>
+<tr class="delete"><td class="ln">13</td><td class="ln"></td><td class="code"><span class="marker">-</span>    rstn = 1;</td></tr>
+<tr class="delete"><td class="ln">14</td><td class="ln"></td><td class="code"><span class="marker">-</span>    #50 ;</td></tr>
+<tr class="delete"><td class="ln">15</td><td class="ln"></td><td class="code"><span class="marker">-</span>    rstn = 0;</td></tr>
+<tr class="delete"><td class="ln">16</td><td class="ln"></td><td class="code"><span class="marker">-</span>  end</td></tr>
+<tr class="delete"><td class="ln">17</td><td class="ln"></td><td class="code"><span class="marker">-</span>  </td></tr>
+<tr class="delete"><td class="ln">18</td><td class="ln"></td><td class="code"><span class="marker">-</span>  always begin</td></tr>
+<tr class="delete"><td class="ln">19</td><td class="ln"></td><td class="code"><span class="marker">-</span>    #(5) clk = ~clk;</td></tr>
+<tr class="delete"><td class="ln">20</td><td class="ln"></td><td class="code"><span class="marker">-</span>  end</td></tr>
+<tr class="delete"><td class="ln">21</td><td class="ln"></td><td class="code"><span class="marker">-</span></td></tr>
+<tr class="delete"><td class="ln">22</td><td class="ln"></td><td class="code"><span class="marker">-</span>  always @(posedge clk) begin   //for debug</td></tr>
+<tr class="delete"><td class="ln">23</td><td class="ln"></td><td class="code"><span class="marker">-</span>       i=i+1;</td></tr>
+<tr class="delete"><td class="ln">24</td><td class="ln"></td><td class="code"><span class="marker">-</span>       if (clk) $write(&quot;\n cycle=%d, IF_PC=%h, IF_ins=%h, &quot;, i, plcomp.PC, plcomp.instr );</td></tr>
+<tr class="delete"><td class="ln">25</td><td class="ln"></td><td class="code"><span class="marker">-</span>       if (plcomp.U_PLCPU.U_RF.RFWr &amp;&amp; plcomp.U_PLCPU.U_RF.A3) $write(&quot;x%d = %h  &quot;, plcomp.U_PLCPU.U_RF.A3, plcomp.U_PLCPU.U_RF.WD) ;</td></tr>
+<tr class="delete"><td class="ln">26</td><td class="ln"></td><td class="code"><span class="marker">-</span>  end</td></tr>
+<tr class="delete"><td class="ln">27</td><td class="ln"></td><td class="code"><span class="marker">-</span>      </td></tr>
+<tr class="delete"><td class="ln">28</td><td class="ln"></td><td class="code"><span class="marker">-</span>endmodule</td></tr>
+            </tbody>
+          </table>
+        </section>
+        
+  </main>
+</body>
+</html>
