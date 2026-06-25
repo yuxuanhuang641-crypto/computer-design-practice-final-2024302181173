@@ -13,7 +13,6 @@
 - `outputs/`：四组老师要求测试及自动评分输出记录。
 - `screenshots/`：四组测试截图、开发板照片、diff 截图和自动评分截图。
 - `diff-report/`：代码修改 diff patch 与 HTML 报告。
-- `report/`：最终实验报告 DOCX/PDF。
 - `requirements/`：final/README.md 与更新后的 QUESTIONS.md。
 
 ## 完成情况
@@ -62,4 +61,3 @@ Raw score: 92/92
 - `alu.v`：扩展 `slt/sltu`、立即数逻辑运算、移位和分支比较，分支类 ALUOp 的 `Zero` 表示条件是否成立。
 - `NPC.v`：支持 `PC+4`、分支目标、`jal` 目标和 `jalr` 目标；`jalr` 使用 `(RS1 + IMM) & 32'hffff_fffe`。
 - `PLCPU.v`：新增 MEM/WB 转发路径、`jump_flush` 控制冲刷，以及 IF/ID、ID/EX、EX/MEM、MEM/WB 流水寄存器控制信号传递。
-
